@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChemCompute — Yansong Li</title>
+  <meta name="description" content="ChemCompute: a Windows compute console that coordinates lab PCs for GROMACS and Gaussian workflows with invites, quotas and verified upgrades.">
+  <link rel="stylesheet" href="../style.css">
+  <script src="../i18n.js" defer></script>
+  <script src="../assets/spatial3d.js?v=20261019" defer></script>
+</head>
+<body>
+  <header class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="../index.html" class="nav-logo" aria-label="Yansong Li home"><span class="dot">YL</span>Yansong Li</a>
+      <nav class="nav-links" id="nav-links">
+        <a href="../index.html#library">HA × PEP Atlas</a>
+        <a href="../work.html" aria-current="page">Work</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#focus">Focus</a>
+        <a class="nav-gh" href="https://github.com/C12isme945/ChemCompute" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+      <div class="lang-switch" role="group" aria-label="Language / 语言">
+        <button class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
+        <button class="lang-btn" data-lang="zh" aria-pressed="false">中文</button>
+      </div>
+      <button class="nav-menu" aria-label="Menu" aria-expanded="false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="detail-hero">
+      <div class="wrap">
+        <div class="breadcrumb"><a href="../work.html">Work</a><span class="sep">/</span><span>ChemCompute</span></div>
+        <div class="detail-cat">Scientific computing · Windows · v1.0.1</div>
+        <h1 class="detail-title">ChemCompute</h1>
+        <p class="detail-lede">One installer that turns a small lab into a coordinated compute cluster — controller, node agent and GROMACS / WSL adapter, with invited deployment and verified upgrades.</p>
+        <div class="detail-actions">
+          <a class="btn btn-primary" href="https://github.com/C12isme945/ChemCompute" target="_blank" rel="noopener">View on GitHub <span class="arrow">↗</span></a>
+          <a class="btn btn-ghost" href="../work.html">← All work</a>
+        </div>
+        <div class="meta-row">
+          <div class="meta-item"><span>Language</span><b>Python 3.12</b></div>
+          <div class="meta-item"><span>Platform</span><b>Windows desktop</b></div>
+          <div class="meta-item"><span>Workloads</span><b>GROMACS · Gaussian</b></div>
+          <div class="meta-item"><span>Version</span><b>v1.0.1 stable</b></div>
+        </div>
+        <div class="detail-visual t-purple">
+          <div class="visual-panel">
+            <div class="vp-head"><span class="vp-title">Compute console · cluster</span><span class="vp-badge">3 nodes</span></div>
+            <div class="vp-row"><span>Controller</span><b>127.0.0.1:8000</b></div>
+            <div class="vp-row"><span>Node · workstation</span><b>Online · GROMACS</b></div>
+            <div class="vp-row"><span>Node · laptop</span><b>Online · 8 cores</b></div>
+            <div class="vp-row"><span>Task queue</span><b>mdrun · running</b></div>
+            <div class="vp-row"><span>Upgrade</span><b>SHA-256 verified</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap" style="padding-bottom:96px">
+      <div class="detail-content">
+        <h2>Overview</h2>
+        <p data-i18n-html="chem.overview1">Many labs have several capable PCs and no simple way to share them. ChemCompute packages the whole arrangement into a Windows installer: choose <strong>Controller</strong>, <strong>Compute node</strong> or <strong>Both</strong>, and a machine registers into a private, invite-only compute pool.</p>
+        <p data-i18n-html="chem.overview2">The console exposes node CPU, RAM and GPU capacity, lets owners set contribution budgets, and runs GROMACS jobs through a queue that uploads step packages, executes them on a chosen node, and streams results back. Gaussian is supported through a private vendor-media deployment path.</p>
+
+        <h2>Highlights</h2>
+        <div class="highlight-grid">
+          <div class="highlight">
+            <div class="n">01</div>
+            <h4>One installer, three roles</h4>
+            <p>Bundles Python and Tk — no separate runtime. Target machines need nothing else installed.</p>
+          </div>
+          <div class="highlight">
+            <div class="n">02</div>
+            <h4>Invite-only joining</h4>
+            <p>The controller exports a single-use invite; a new machine installs and registers with that code.</p>
+          </div>
+          <div class="highlight">
+            <div class="n">03</div>
+            <h4>Contribution budgets</h4>
+            <p>Owners set CPU core share, memory budget, GPU toggle, or pause new tasks entirely.</p>
+          </div>
+          <div class="highlight">
+            <div class="n">04</div>
+            <h4>Verified online upgrades</h4>
+            <p>Downloads from official releases, validates SHA-256, waits for idle tasks, preserves config and results.</p>
+          </div>
+        </div>
+
+        <h2>Task lifecycle</h2>
+        <div class="flow">
+          <span class="flow-step">Upload ZIP</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Preview steps</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Pick resources</span><span class="flow-arrow">→</span>
+          <span class="flow-step accent">Node executes</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Results returned</span>
+        </div>
+        <p>The v2 queue supports per-node task isolation, lease recovery after disconnects, and checkpoint-based GROMACS continuation. Package validation blocks directory traversal, links, encrypted archives, dangerous Windows names and CRC errors before anything runs.</p>
+
+        <h2>Scope and safety</h2>
+        <table class="spec-table">
+          <tr><td>Networking</td><td>Private Tailscale mesh; HTTP for loopback / encrypted tailnet only</td></tr>
+          <tr><td>GROMACS commands</td><td>check · grompp · mdrun · editconf · solvate · genion · energy</td></tr>
+          <tr><td>Package limits</td><td>100 MiB upload · 512 MiB expanded · 2,000 files</td></tr>
+          <tr><td>Output cap</td><td>500 KB stdout/stderr per step</td></tr>
+          <tr><td>Not a Windows service</td><td>Starts with user login; not guaranteed before sign-in</td></tr>
+          <tr><td>Not a sandbox</td><td>Resource budgets are admission criteria, not OS isolation</td></tr>
+        </table>
+        <div class="callout" data-i18n-html="chem.callout">
+          <b>Stated limits.</b> Release builds are self-signed, so Windows may show an unknown publisher. Remote access goes through a Cloudflare Tunnel; the domain is not a listen address. The README clearly separates verified behavior from what is still being validated.
+        </div>
+
+        <h2>Tech stack</h2>
+        <div class="detail-tags">
+          <span class="tag">Python 3.12</span>
+          <span class="tag">Tk desktop console</span>
+          <span class="tag">GROMACS / WSL</span>
+          <span class="tag">Tailscale</span>
+          <span class="tag">Cloudflare Tunnel</span>
+          <span class="tag">SHA-256 updates</span>
+        </div>
+      </div>
+
+      <div class="next-prev">
+        <a href="archivelens.html"><span>Next project</span><b>ArchiveLens →</b></a>
+        <a href="../work.html"><span>All projects</span><b>Back to work →</b></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <div class="footer-brand"><b>Yansong Li</b> · Engineer & builder</div>
+      <div class="footer-links"><a href="../index.html">Home</a><a href="../work.html">Work</a><a href="https://github.com/C12isme945" target="_blank" rel="noopener">GitHub</a></div>
+      <div class="footer-note">© 2026 Yansong Li.</div>
+    </div>
+  </footer>
+  <script src="../app.js"></script>
+</body>
+</html>

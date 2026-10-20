@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07121f">
+  <title>透明质酸 × 多肽｜证据时间线</title>
+  <!-- 本页为证据叙事可视化，内容截至 2026-10-14（Asia/Singapore），不是实验结果发布。 -->
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #edf7f4;
+      --muted: #9bb1bd;
+      --faint: #65808e;
+      --bg: #07121f;
+      --panel: rgba(14, 31, 46, .78);
+      --panel-strong: #102638;
+      --line: rgba(157, 214, 205, .16);
+      --teal: #76e0c1;
+      --teal-deep: #1e806f;
+      --amber: #ffc46f;
+      --coral: #ff8c87;
+      --lavender: #b9b6ff;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .28);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% -5%, rgba(66, 148, 154, .23), transparent 30rem),
+        radial-gradient(circle at 94% 9%, rgba(155, 111, 186, .18), transparent 26rem),
+        linear-gradient(145deg, #06111d 0%, #091826 52%, #07101b 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.65;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .06;
+      background-image: linear-gradient(rgba(255,255,255,.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.35) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, black, transparent 80%);
+    }
+
+    a { color: inherit; }
+    button, input { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, a:focus-visible {
+      outline: 3px solid var(--amber);
+      outline-offset: 3px;
+    }
+
+    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 24px 0; color: var(--muted); font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; }
+    .brand { display: flex; gap: 10px; align-items: center; color: var(--ink); font-weight: 800; letter-spacing: .16em; }
+    .brand-mark { width: 12px; height: 12px; border: 2px solid var(--teal); border-radius: 50%; box-shadow: 0 0 22px rgba(118,224,193,.75); }
+    .top-meta { display: flex; align-items: center; gap: 10px; }
+    .top-dot { width: 6px; height: 6px; border-radius: 99px; background: var(--amber); box-shadow: 0 0 12px var(--amber); }
+
+    .hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr); gap: 34px; align-items: end; padding: 56px 0 48px; }
+    .eyebrow { color: var(--teal); font-size: .76rem; font-weight: 800; letter-spacing: .19em; text-transform: uppercase; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 760px; margin-bottom: 22px; font-size: clamp(2.65rem, 7vw, 5.6rem); line-height: .98; letter-spacing: -.075em; font-weight: 800; }
+    .hero-copy { max-width: 690px; margin-bottom: 0; color: #bbced4; font-size: clamp(1rem, 1.8vw, 1.18rem); }
+    .hero-copy strong { color: var(--ink); font-weight: 700; }
+    .hero-side { padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(145deg, rgba(18, 47, 61, .72), rgba(10, 25, 40, .58)); box-shadow: var(--shadow); }
+    .hero-side-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; color: var(--muted); font-size: .75rem; letter-spacing: .13em; text-transform: uppercase; }
+    .pulse { width: 8px; height: 8px; background: var(--coral); border-radius: 50%; box-shadow: 0 0 0 6px rgba(255,140,135,.12), 0 0 20px var(--coral); }
+    .hero-side h2 { margin-bottom: 18px; font-size: 1.18rem; letter-spacing: -.02em; }
+    .hero-side p { color: var(--muted); font-size: .92rem; }
+    .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 22px; }
+    .stat { padding: 12px; border: 1px solid var(--line); border-radius: 15px; background: rgba(2, 11, 18, .2); }
+    .stat b { display: block; margin-bottom: 4px; color: var(--teal); font-size: 1.25rem; letter-spacing: -.04em; }
+    .stat span { color: var(--faint); font-size: .69rem; }
+
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 20px; }
+    .section-kicker { color: var(--teal); font-size: .72rem; font-weight: 800; letter-spacing: .17em; text-transform: uppercase; }
+    h2.section-title { margin: 5px 0 0; font-size: clamp(1.55rem, 3vw, 2.15rem); letter-spacing: -.055em; }
+    .section-note { max-width: 410px; margin-bottom: 0; color: var(--muted); font-size: .9rem; text-align: right; }
+
+    .control-panel { margin-bottom: 34px; padding: 18px; border: 1px solid var(--line); border-radius: 20px; background: rgba(8, 22, 34, .72); }
+    .control-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .search-wrap { position: relative; flex: 1 1 260px; }
+    .search-wrap svg { position: absolute; top: 50%; left: 15px; width: 17px; height: 17px; transform: translateY(-50%); color: var(--faint); }
+    .search { width: 100%; border: 1px solid var(--line); border-radius: 13px; padding: 11px 14px 11px 42px; background: #0c1d2c; color: var(--ink); }
+    .search::placeholder { color: #6e8794; }
+    .filter-group { display: flex; gap: 7px; flex-wrap: wrap; }
+    .filter-label { width: 100%; margin: 7px 0 0; color: var(--faint); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; }
+    .filter-btn, .utility-btn { border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; background: transparent; color: var(--muted); cursor: pointer; font-size: .78rem; transition: border-color .2s ease, color .2s ease, background .2s ease, transform .2s ease; }
+    .filter-btn:hover, .utility-btn:hover { transform: translateY(-1px); border-color: rgba(118,224,193,.55); color: var(--ink); }
+    .filter-btn[aria-pressed="true"] { border-color: var(--teal); background: rgba(118,224,193,.12); color: var(--teal); }
+    .utility-btn { margin-left: auto; color: var(--ink); }
+    .result-line { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 15px; color: var(--faint); font-size: .78rem; }
+    .result-count { color: var(--teal); font-weight: 700; }
+
+    .timeline { position: relative; padding: 6px 0 30px; }
+    .timeline::before { content: ""; position: absolute; top: 0; bottom: 0; left: 31px; width: 1px; background: linear-gradient(var(--teal), rgba(118,224,193,.16) 75%, transparent); }
+    .stage { position: relative; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 18px; margin-bottom: 18px; scroll-margin-top: 20px; }
+    .stage.is-hidden { display: none; }
+    .stage-node { position: relative; z-index: 1; display: grid; place-items: center; width: 64px; height: 64px; border: 1px solid rgba(118,224,193,.55); border-radius: 50%; background: #091b2a; color: var(--teal); font-size: .78rem; font-weight: 800; box-shadow: 0 0 0 8px rgba(7,18,31,.9), 0 0 24px rgba(118,224,193,.14); }
+    .stage[data-status="hold"] .stage-node { border-color: rgba(255,140,135,.65); color: var(--coral); }
+    .stage[data-status="planned"] .stage-node { border-color: rgba(255,196,111,.65); color: var(--amber); }
+    .stage-card { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(145deg, rgba(17, 39, 56, .8), rgba(9, 24, 38, .82)); box-shadow: 0 14px 40px rgba(0,0,0,.12); transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease; }
+    .stage-card:hover { border-color: rgba(118,224,193,.4); transform: translateY(-2px); box-shadow: 0 18px 46px rgba(0,0,0,.2); }
+    .stage[data-status="hold"] .stage-card:hover { border-color: rgba(255,140,135,.4); }
+    .stage-toggle { display: block; width: 100%; padding: 22px 24px; border: 0; background: transparent; text-align: left; cursor: pointer; }
+    .stage-topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+    .stage-date { color: var(--muted); font-size: .78rem; letter-spacing: .05em; }
+    .stage-tags { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; justify-content: flex-end; }
+    .tag { display: inline-flex; align-items: center; min-height: 24px; padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: .68rem; white-space: nowrap; }
+    .tag.status-verified { border-color: rgba(118,224,193,.35); color: var(--teal); }
+    .tag.status-planned { border-color: rgba(255,196,111,.35); color: var(--amber); }
+    .tag.status-hold { border-color: rgba(255,140,135,.35); color: var(--coral); }
+    .stage-card h3 { margin-bottom: 8px; font-size: clamp(1.12rem, 2.2vw, 1.52rem); line-height: 1.2; letter-spacing: -.04em; }
+    .stage-summary { max-width: 850px; margin-bottom: 0; color: #b5c9d0; font-size: .93rem; }
+    .chevron { display: inline-block; margin-left: 8px; color: var(--teal); transition: transform .25s ease; }
+    .stage-toggle[aria-expanded="true"] .chevron { transform: rotate(180deg); }
+    .stage-detail { display: none; padding: 0 24px 24px; }
+    .stage-detail.is-open { display: block; animation: reveal .28s ease both; }
+    @keyframes reveal { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    .detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .detail-box { min-height: 125px; padding: 15px; border: 1px solid var(--line); border-radius: 15px; background: rgba(2, 10, 17, .2); }
+    .detail-box h4 { margin: 0 0 7px; color: var(--teal); font-size: .71rem; letter-spacing: .12em; text-transform: uppercase; }
+    .detail-box p { margin-bottom: 0; color: var(--muted); font-size: .82rem; }
+    .detail-box code { color: var(--amber); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .78rem; word-break: break-word; }
+
+    .lower-grid { display: grid; grid-template-columns: 1.12fr .88fr; gap: 18px; margin: 70px 0; }
+    .info-panel { padding: 25px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(13, 30, 45, .72); }
+    .info-panel h3 { margin-bottom: 6px; font-size: 1.18rem; letter-spacing: -.035em; }
+    .panel-intro { margin-bottom: 20px; color: var(--muted); font-size: .86rem; }
+    .asset-list { display: grid; gap: 10px; }
+    .asset { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+    .asset:first-child { border-top: 0; padding-top: 0; }
+    .asset-label { color: var(--teal); font-size: .75rem; font-weight: 800; }
+    .asset p { margin-bottom: 0; color: var(--muted); font-size: .78rem; }
+    .asset code { display: inline-block; margin-top: 3px; color: #dce8e8; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .72rem; overflow-wrap: anywhere; }
+    .boundary-list { display: grid; gap: 10px; }
+    .boundary { padding: 14px; border-left: 3px solid var(--teal); border-radius: 0 14px 14px 0; background: rgba(118,224,193,.06); }
+    .boundary.planned { border-left-color: var(--amber); background: rgba(255,196,111,.06); }
+    .boundary.hold { border-left-color: var(--coral); background: rgba(255,140,135,.06); }
+    .boundary-title { margin-bottom: 3px; font-size: .81rem; font-weight: 800; }
+    .boundary p { margin-bottom: 0; color: var(--muted); font-size: .78rem; }
+
+    .next-panel { margin: 0 0 74px; padding: 27px; border: 1px solid rgba(255,196,111,.23); border-radius: var(--radius); background: linear-gradient(135deg, rgba(86,61,36,.31), rgba(19,36,48,.72)); }
+    .next-panel .section-kicker { color: var(--amber); }
+    .next-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 22px; }
+    .next-step { position: relative; padding: 17px; border: 1px solid rgba(255,196,111,.18); border-radius: 16px; background: rgba(7, 17, 26, .27); }
+    .next-step::before { content: ""; display: block; width: 7px; height: 7px; margin-bottom: 13px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 14px var(--amber); }
+    .next-step b { display: block; margin-bottom: 5px; font-size: .9rem; }
+    .next-step p { margin-bottom: 0; color: var(--muted); font-size: .78rem; }
+    footer { padding: 26px 0 42px; border-top: 1px solid var(--line); color: var(--faint); font-size: .75rem; }
+    .footer-row { display: flex; justify-content: space-between; gap: 18px; }
+
+    @media (max-width: 820px) {
+      .hero, .lower-grid { grid-template-columns: 1fr; }
+      .hero { padding-top: 36px; }
+      .section-note { text-align: left; }
+      .section-head { align-items: start; flex-direction: column; gap: 8px; }
+      .detail-grid, .next-grid { grid-template-columns: 1fr; }
+      .footer-row { flex-direction: column; }
+    }
+
+    @media (max-width: 560px) {
+      .shell { width: min(100% - 24px, 1180px); }
+      .topbar { align-items: flex-start; gap: 14px; flex-direction: column; }
+      h1 { font-size: clamp(2.5rem, 15vw, 4rem); }
+      .hero-stats { grid-template-columns: 1fr; }
+      .timeline::before { left: 22px; }
+      .stage { grid-template-columns: 44px minmax(0, 1fr); gap: 12px; }
+      .stage-node { width: 44px; height: 44px; font-size: .67rem; box-shadow: 0 0 0 6px rgba(7,18,31,.9); }
+      .stage-toggle { padding: 18px; }
+      .stage-detail { padding: 0 18px 18px; }
+      .stage-topline { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .stage-tags { justify-content: flex-start; }
+      .asset { grid-template-columns: 1fr; gap: 4px; }
+      .utility-btn { margin-left: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span> HA / PEPTIDE</div>
+    <div class="top-meta"><span class="top-dot" aria-hidden="true"></span>证据叙事档案 · 2026.10.14</div>
+  </header>
+
+  <main class="shell">
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <div class="eyebrow">Research timeline · local + cloud archive</div>
+        <h1 id="page-title">透明质酸<br><span style="color:var(--teal)">× 多肽</span> 的十个月</h1>
+        <p class="hero-copy">从文献与接枝化学，到 QHA 工程化、HyalMatrix-AI、HA16 脂肽模拟，再到面向精华产品的开题框架。<strong>这是一张证据地图，也是项目边界的可视化。</strong></p>
+      </div>
+      <aside class="hero-side" aria-label="当前项目状态">
+        <div class="hero-side-label"><span>Current state</span><span class="pulse" aria-label="当前为 HOLD 状态"></span></div>
+        <h2>PARTIAL_PROGRESS_HOLD</h2>
+        <p>已归档的材料、计算预检和技术诊断可以支持过程叙事；完整生产模拟、湿实验和产品功效仍需单独证据。</p>
+        <div class="hero-stats">
+          <div class="stat"><b>6</b><span>阶段节点</span></div>
+          <div class="stat"><b>10 mo</b><span>2026.01 → 10.14</span></div>
+          <div class="stat"><b>3</b><span>证据状态</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="timeline" aria-labelledby="timeline-title">
+      <div class="section-head">
+        <div><div class="section-kicker">01 / Timeline</div><h2 id="timeline-title" class="section-title">沿时间展开项目，而不是堆文件名</h2></div>
+        <p class="section-note">点击节点或卡片，查看该阶段的资产、意义与证据边界。</p>
+      </div>
+
+      <div class="control-panel" aria-label="时间线筛选工具">
+        <div class="control-row">
+          <label class="search-wrap" aria-label="搜索阶段、摘要或标签">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+            <input id="search" class="search" type="search" placeholder="搜索：QHA、KTTKS、HyalMatrix…" autocomplete="off">
+          </label>
+          <button class="utility-btn" id="expandAll" type="button">展开全部</button>
+        </div>
+        <div class="filter-label">按主题筛选</div>
+        <div class="filter-group" id="categoryFilters" role="group" aria-label="按主题筛选">
+          <button class="filter-btn" type="button" data-filter-group="category" data-value="all" aria-pressed="true">全部</button>
+          <button class="filter-btn" type="button" data-filter-group="category" data-value="archive" aria-pressed="false">文献 / 化学</button>
+          <button class="filter-btn" type="button" data-filter-group="category" data-value="engineering" aria-pressed="false">工程 / QHA</button>
+          <button class="filter-btn" type="button" data-filter-group="category" data-value="compute" aria-pressed="false">AI / 计算</button>
+          <button class="filter-btn" type="button" data-filter-group="category" data-value="simulation" aria-pressed="false">模拟质控</button>
+          <button class="filter-btn" type="button" data-filter-group="category" data-value="product" aria-pressed="false">产品 / 实验</button>
+        </div>
+        <div class="filter-label">按证据状态筛选</div>
+        <div class="filter-group" id="statusFilters" role="group" aria-label="按证据状态筛选">
+          <button class="filter-btn" type="button" data-filter-group="status" data-value="all" aria-pressed="true">全部状态</button>
+          <button class="filter-btn" type="button" data-filter-group="status" data-value="verified" aria-pressed="false">已归档 / 已核验</button>
+          <button class="filter-btn" type="button" data-filter-group="status" data-value="planned" aria-pressed="false">设计 / 计划</button>
+          <button class="filter-btn" type="button" data-filter-group="status" data-value="hold" aria-pressed="false">HOLD / 待补证据</button>
+        </div>
+        <div class="result-line"><span><span id="resultCount" class="result-count">6</span> 个阶段可见</span><span id="searchHint">当前显示全部时间线</span></div>
+      </div>
+
+      <div class="timeline" id="timelineList" aria-live="polite"></div>
+      <div id="emptyState" hidden style="padding: 30px; border:1px dashed var(--line); border-radius:18px; color:var(--muted); text-align:center">没有匹配的阶段。试试搜索 “Pal” 或清除筛选。</div>
+    </section>
+
+    <section class="lower-grid" aria-label="项目资产与证据边界">
+      <article class="info-panel">
+        <div class="section-kicker">02 / Asset map</div>
+        <h3>四个位置，拼出一条研究链</h3>
+        <p class="panel-intro">代表性入口来自本地工作区、历史归档、预迁移备份与 Google Drive。路径用于定位证据，不能单独替代内容核验。</p>
+        <div class="asset-list">
+          <div class="asset"><div class="asset-label">本地归档</div><p>早期调研、组会汇报、接枝方案与谱图<br><code>G:\Research_Archive\Historical_Programs\02-水凝胶与多糖\透明质酸与多肽</code></p></div>
+          <div class="asset"><div class="asset-label">工程库</div><p>QHA 高固含工艺、反应器概念、COMSOL 与放大 SOP<br><code>…\透明质酸与多肽\01_实验设计与项目规划书</code></p></div>
+          <div class="asset"><div class="asset-label">核心备份</div><p>HyalMatrix-AI 核心包，378 个文件，带清单与 SHA-256<br><code>gdrive:Research_Backup_20260909/</code></p></div>
+          <div class="asset"><div class="asset-label">当前工作区</div><p>HA16、Pal/Ac 质控、Colab 诊断与开题重构<br><code>C:\Users\Yansong LI\Documents\Codex\2026-09-25\referenced-chatgpt-conversation-this-is-an</code></p></div>
+        </div>
+      </article>
+
+      <article class="info-panel">
+        <div class="section-kicker">03 / Evidence boundary</div>
+        <h3>每个结论都有自己的颜色</h3>
+        <p class="panel-intro">把“做过的整理”“准备做的方案”和“被数值问题拦截的部分”放在同一张图里，便于继续工作。</p>
+        <div class="boundary-list">
+          <div class="boundary"><div class="boundary-title">已验证 / 已归档</div><p>文件存在、清单与哈希、静态审核、技术预检或过程记录。它们支持过程叙事。</p></div>
+          <div class="boundary planned"><div class="boundary-title">设计 / 计划</div><p>受约束肽库、22 批产品验证矩阵、候选筛选路线。计划数字不等于真实实验。</p></div>
+          <div class="boundary hold"><div class="boundary-title">HOLD / NOT_RUN</div><p>完整生产 MD、结合自由能、Kd、递送效果、产品功效和新肽排序都不能从当前材料直接推出。</p></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="next-panel" aria-labelledby="next-title">
+      <div class="section-kicker">04 / Next handoff</div>
+      <h2 id="next-title" class="section-title">当前接续动作</h2>
+      <div class="next-grid">
+        <div class="next-step"><b>先保留 HOLD</b><p>不把退出码、短轨迹或预检结果写成科学结论。</p></div>
+        <div class="next-step"><b>补齐原始证据</b><p>核对原始轨迹恢复、输入来源、能量归因和几何验收。</p></div>
+        <div class="next-step"><b>再推进产品验证</b><p>费用责任清楚后，按锚点、候选、确认三层实施湿实验。</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell">
+    <div class="footer-row"><span>透明质酸 × 多肽｜本地与云端项目时间线</span><span>Evidence first · Asia/Singapore · 2026-10-14</span></div>
+  </footer>
+
+  <script>
+    (() => {
+      const stages = [
+        {
+          id: "stage-01", no: "01", date: "2026.01 — 06", category: ["archive"], status: "verified", statusLabel: "已归档",
+          title: "从文献地图走向接枝化学",
+          summary: "围绕 HA 改性、经皮递送、环九肽、SPACE 肽、硫辛酸与蛇毒肽等方向建立早期知识底图，随后形成无铜点击接枝和 HA–多肽研究方案。",
+          assets: "文献与专利库、组会 PPT、透明质酸接枝多肽研究计划、无铜点击化学接枝实验方案",
+          meaning: "把“透明质酸如何承载或连接多肽”从概念问题拆成化学路线、材料场景和产品方向。",
+          boundary: "资料与方案已归档；不能从方案文件推断已经完成合成、表征或功效。"
+        },
+        {
+          id: "stage-02", no: "02", date: "2026.08 — 09.03", category: ["engineering"], status: "verified", statusLabel: "工程归档",
+          title: "QHA：从分子改性走向工艺工程", 
+          summary: "路线聚焦阳离子透明质酸、高固含分散、GTMAC 改性和连续投料，配套形成反应器概念、设备 BOM、COMSOL 仿真以及六瓶并行蠕动泵滴加 SOP。",
+          assets: "QHA 工艺核查与仿真、反应器与自动投料设计、20260902/03 放大 SOP、工艺数据库",
+          meaning: "研究尺度由单个反应方案扩展到传质、投料、并行批次和放大可执行性。",
+          boundary: "仿真、SOP 和 BOM 是工程设计资产；它们不能替代真实批次、质控与放大验证。"
+        },
+        {
+          id: "stage-03", no: "03", date: "2026.09.04 — 09.14", category: ["compute", "archive"], status: "verified", statusLabel: "核心归档",
+          title: "HyalMatrix-AI：建立可追踪的闭环研究系统",
+          summary: "项目把历史实验归档、文献数据库、实验设计、量子化学、分子模拟、论文数据包和自动化运维收拢到统一工程索引，并完成核心研究包云端备份。",
+          assets: "E:\\Research\\HyalMatrix-AI、PROJECT_ALL_WORK_SUMMARY.md、Research_Backup_Core_20260909.zip、云端清单与 SHA-256",
+          meaning: "研究从多个孤立文件，变成具有来源、状态、哈希和交接入口的证据链。",
+          boundary: "核心包完成归档不等于所有科学问题已经验证；设计、旧结果和模型输出仍须按证据等级读取。"
+        },
+        {
+          id: "stage-04", no: "04", date: "2026.09.15 — 10.06", category: ["simulation"], status: "hold", statusLabel: "数值 HOLD",
+          title: "HA16 × Ac/Pal-KTTKS：把脂肽机制变成可检验问题",
+          summary: "研究聚焦理论 HA16 与 Ac-KTTKS、Nα-Pal-KTTKS 的接触/分离初态比较，考察共有肽骨架、棕榈酰链、水合和接触几何；随后因能量趋势与输入链条问题进入数值质控暂停。",
+          assets: "HA_DP8 论文设计与计算闸门、四组条件协议、Pal_contact 链条审计、平台与本地读回包",
+          meaning: "核心问题从“脂酰化是否更强”改为开放检验：差异来自共有肽段、脂尾，还是初态与数值条件。",
+          boundary: "单条轨迹、技术预检和平台完成状态不能支持结合自由能、Kd、解离时间、递送效果或普遍机制。"
+        },
+        {
+          id: "stage-05", no: "05", date: "2026.10.07 — 10.12", category: ["product", "compute"], status: "planned", statusLabel: "设计推进",
+          title: "从零算力审计转向产品导向开题",
+          summary: "在冻结输入、来源绑定和轻量 Colab 对齐的基础上，论文架构转向“受约束肽设计—多尺度计算—HA 精华性能验证”，形成 18–22 批的分层产品验证矩阵。",
+          assets: "Paper_evidence_package_20261007、Paper_low_compute_20261011、三章产品提案、22 批实验矩阵",
+          meaning: "计算被放回候选筛选和解释的位置，pH、外观、流变、稳定性与保水等产品端点成为最终验收入口。",
+          boundary: "22 批、AI 候选、新肽性能和合成基准均属于计划或方法设计，当前真实新动力学和新增人工实验仍为 0。"
+        },
+        {
+          id: "stage-06", no: "06", date: "2026.10.13 — 10.14", category: ["simulation", "product"], status: "hold", statusLabel: "当前 HOLD",
+          title: "Cycle 2：在免费环境做受限数值诊断",
+          summary: "针对同一 200 ps 检查点，从 LINCS 4/1 与 6/2 的单变量技术诊断出发，在免费 Colab 环境推进至约 217.24 ps 后按墙钟上限结束；随后完成了云端几何审核与本地回收校验。",
+          assets: "Paper_cycle2_20261013、geometry_audit_20261014T0955、STATUS_20261014_1800.md、terminal_20261014T040034",
+          meaning: "把数值异常归因拆成可复核的有限诊断，并确认原子映射、溶质键与几何技术指标，保留预算与科学闸门。",
+          boundary: "几何审核属于技术观察，scientific_acceptance 仍为 NOT_GRANTED；完整窗口统计、终态坐标、来源闭环和生产放行仍未完成。"
+        }
+      ];
+
+      const list = document.querySelector('#timelineList');
+      const search = document.querySelector('#search');
+      const resultCount = document.querySelector('#resultCount');
+      const searchHint = document.querySelector('#searchHint');
+      const emptyState = document.querySelector('#emptyState');
+      const expandAll = document.querySelector('#expandAll');
+      const filters = { category: 'all', status: 'all' };
+
+      const esc = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
+
+      const render = () => {
+        list.innerHTML = stages.map((stage) => `
+          <article class="stage" id="${stage.id}" data-category="${stage.category.join(' ')}" data-status="${stage.status}" data-search="${esc([stage.date, stage.title, stage.summary, stage.assets, stage.meaning, stage.boundary].join(' ')).toLowerCase()}">
+            <button class="stage-node" type="button" data-scroll-to="${stage.id}" aria-label="定位到第 ${stage.no} 阶段">${stage.no}</button>
+            <div class="stage-card">
+              <button class="stage-toggle" type="button" aria-expanded="false" aria-controls="${stage.id}-detail">
+                <div class="stage-topline"><span class="stage-date">${esc(stage.date)}</span><span class="stage-tags"><span class="tag">${stage.category.map((c) => ({archive:'文献 / 化学', engineering:'工程 / QHA', compute:'AI / 计算', simulation:'模拟质控', product:'产品 / 实验'}[c])).join(' · ')}</span><span class="tag status-${stage.status}">${esc(stage.statusLabel)}</span></span></div>
+                <h3>${esc(stage.title)} <span class="chevron" aria-hidden="true">⌄</span></h3>
+                <p class="stage-summary">${esc(stage.summary)}</p>
+              </button>
+              <div class="stage-detail" id="${stage.id}-detail">
+                <div class="detail-grid">
+                  <div class="detail-box"><h4>代表资产</h4><p>${esc(stage.assets)}</p></div>
+                  <div class="detail-box"><h4>这一阶段完成了什么</h4><p>${esc(stage.meaning)}</p></div>
+                  <div class="detail-box"><h4>证据边界</h4><p>${esc(stage.boundary)}</p></div>
+                </div>
+              </div>
+            </div>
+          </article>
+        `).join('');
+
+        list.querySelectorAll('.stage-toggle').forEach((toggle) => toggle.addEventListener('click', () => setExpanded(toggle, toggle.getAttribute('aria-expanded') !== 'true')));
+        list.querySelectorAll('[data-scroll-to]').forEach((node) => node.addEventListener('click', () => {
+          const target = document.getElementById(node.dataset.scrollTo);
+          if (target && !target.classList.contains('is-hidden')) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const toggle = target?.querySelector('.stage-toggle');
+          if (toggle) setExpanded(toggle, true);
+        }));
+        applyFilters();
+      };
+
+      const setExpanded = (toggle, open) => {
+        toggle.setAttribute('aria-expanded', String(open));
+        const detail = document.getElementById(toggle.getAttribute('aria-controls'));
+        detail.classList.toggle('is-open', open);
+      };
+
+      const applyFilters = () => {
+        const term = search.value.trim().toLowerCase();
+        let visible = 0;
+        document.querySelectorAll('.stage').forEach((item) => {
+          const categoryMatch = filters.category === 'all' || item.dataset.category.split(' ').includes(filters.category);
+          const statusMatch = filters.status === 'all' || item.dataset.status === filters.status;
+          const textMatch = !term || item.dataset.search.includes(term);
+          const show = categoryMatch && statusMatch && textMatch;
+          item.classList.toggle('is-hidden', !show);
+          if (show) visible += 1;
+        });
+        resultCount.textContent = visible;
+        emptyState.hidden = visible !== 0;
+        searchHint.textContent = term ? `搜索 “${term}” · 已叠加主题与状态筛选` : `主题：${filters.category === 'all' ? '全部' : filters.category} · 状态：${filters.status === 'all' ? '全部' : filters.status}`;
+      };
+
+      document.querySelectorAll('.filter-btn').forEach((button) => button.addEventListener('click', () => {
+        const group = button.dataset.filterGroup;
+        filters[group] = button.dataset.value;
+        document.querySelectorAll(`.filter-btn[data-filter-group="${group}"]`).forEach((peer) => peer.setAttribute('aria-pressed', String(peer === button)));
+        applyFilters();
+      }));
+      search.addEventListener('input', applyFilters);
+      expandAll.addEventListener('click', () => {
+        const shouldOpen = expandAll.textContent.trim() === '展开全部';
+        document.querySelectorAll('.stage:not(.is-hidden) .stage-toggle').forEach((toggle) => setExpanded(toggle, shouldOpen));
+        expandAll.textContent = shouldOpen ? '收起全部' : '展开全部';
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

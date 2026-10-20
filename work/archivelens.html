@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArchiveLens — Yansong Li</title>
+  <meta name="description" content="ArchiveLens: local ZIP recovery verification with trusted SHA-256 manifests, inspectable file differences and portable evidence.">
+  <link rel="stylesheet" href="../style.css">
+  <script src="../i18n.js" defer></script>
+  <script src="../assets/spatial3d.js?v=20261019" defer></script>
+</head>
+<body>
+  <header class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="../index.html" class="nav-logo" aria-label="Yansong Li home"><span class="dot">YL</span>Yansong Li</a>
+      <nav class="nav-links" id="nav-links">
+        <a href="../index.html#library">HA × PEP Atlas</a>
+        <a href="../work.html" aria-current="page">Work</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#focus">Focus</a>
+        <a class="nav-gh" href="https://github.com/C12isme945/archivelens" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+      <div class="lang-switch" role="group" aria-label="Language / 语言">
+        <button class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
+        <button class="lang-btn" data-lang="zh" aria-pressed="false">中文</button>
+      </div>
+      <button class="nav-menu" aria-label="Menu" aria-expanded="false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="detail-hero">
+      <div class="wrap">
+        <div class="breadcrumb"><a href="../work.html">Work</a><span class="sep">/</span><span>ArchiveLens</span></div>
+        <div class="detail-cat">Developer tools · Python · 2026</div>
+        <h1 class="detail-title">ArchiveLens</h1>
+        <p class="detail-lede">A recovery check you can inspect. Compare the files in a restored ZIP against a trusted manifest saved earlier — entirely on your machine.</p>
+        <div class="detail-actions">
+          <a class="btn btn-primary" href="https://github.com/C12isme945/archivelens" target="_blank" rel="noopener">View on GitHub <span class="arrow">↗</span></a>
+          <a class="btn btn-ghost" href="../work.html">← All work</a>
+        </div>
+        <div class="meta-row">
+          <div class="meta-item"><span>Language</span><b>Python 3.10+</b></div>
+          <div class="meta-item"><span>Interface</span><b>CLI + local workbench</b></div>
+          <div class="meta-item"><span>License</span><b>MIT</b></div>
+          <div class="meta-item"><span>Updated</span><b>October 2026</b></div>
+        </div>
+        <div class="detail-visual t-teal">
+          <div class="visual-panel">
+            <div class="vp-head"><span class="vp-title">Recovery report · restored-copy.zip</span><span class="vp-badge">Exact match</span></div>
+            <div class="vp-row"><span>Expected files</span><b>1,000</b></div>
+            <div class="vp-row"><span>Matched (SHA-256)</span><b>1,000</b></div>
+            <div class="vp-row"><span>Changed / missing</span><b>0</b></div>
+            <div class="vp-row"><span>Unexpected extras</span><b>0</b></div>
+            <div class="vp-row"><span>Container bytes</span><b>Re-compressed</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap" style="padding-bottom:96px">
+      <div class="detail-content">
+        <h2>Overview</h2>
+        <p data-i18n-html="arch.overview1">Restoring a ZIP backup is easy. Knowing whether the restoration is <strong>actually complete</strong> is harder. ArchiveLens creates a trusted SHA-256 manifest from your original archive, then compares a recovered copy file by file — showing exactly what changed, what is missing, and what appeared unexpectedly.</p>
+        <p data-i18n-html="arch.overview2">Everything runs locally in memory. There are no cloud accounts, no API keys, and no external requests. The only thing that persists is a report you deliberately download.</p>
+
+        <h2>Highlights</h2>
+        <div class="highlight-grid">
+          <div class="highlight">
+            <div class="n">01</div>
+            <h4>Trusted manifests</h4>
+            <p>Build a baseline from a known-good original, store it separately, and compare any later restoration against it.</p>
+          </div>
+          <div class="highlight">
+            <div class="n">02</div>
+            <h4>Four honest verdicts</h4>
+            <p>EXACT_MATCH, CHANGES_FOUND, REVIEW_EXTRAS or BLOCKED — no ambiguous “probably fine.”</p>
+          </div>
+          <div class="highlight">
+            <div class="n">03</div>
+            <h4>Survives re-compression</h4>
+            <p>Identical file content passes even when the ZIP container bytes differ, and the report records both facts.</p>
+          </div>
+          <div class="highlight">
+            <div class="n">04</div>
+            <h4>Conservative safety limits</h4>
+            <p>64 MiB compressed, 128 MiB expanded, 1,000 entries. Unsafe paths, links and corrupt members are blocked, not guessed at.</p>
+          </div>
+        </div>
+
+        <h2>How it works</h2>
+        <div class="flow">
+          <span class="flow-step">Original ZIP</span><span class="flow-arrow">→</span>
+          <span class="flow-step accent">Manifest · SHA-256</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Recovered copy</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Inspectable report</span>
+        </div>
+        <p>Create the manifest once from the original archive, keep it independently, then verify any restored copy. A manifest generated from the same recovery copy proves nothing — the tool documents that limitation instead of hiding it.</p>
+
+        <h2>Scope and limits</h2>
+        <table class="spec-table">
+          <tr><td>Archive formats</td><td>Stored / deflated, unencrypted ZIP</td></tr>
+          <tr><td>Size limits</td><td>64 MiB compressed · 128 MiB expanded · 32 MiB per member</td></tr>
+          <tr><td>Comparison</td><td>Relative paths + SHA-256 content hashes; empty files count</td></tr>
+          <tr><td>Excluded</td><td>Directory entries, metadata, permissions, timestamps</td></tr>
+          <tr><td>Blocked input</td><td>Links, path traversal, duplicates, Unicode collisions, extreme compression ratios</td></tr>
+          <tr><td>Not provided</td><td>Extraction, deletion, malware scanning or manifest authentication</td></tr>
+        </table>
+        <div class="callout" data-i18n-html="arch.callout">
+          <b>Honest by design.</b> This proof of concept does not authenticate manifests, verify ongoing cloud availability, scan for malware, or guarantee that originals can safely be deleted. It has not had an independent security audit — the README says so directly.
+        </div>
+
+        <h2>Tech stack</h2>
+        <div class="detail-tags">
+          <span class="tag">Python 3.10+</span>
+          <span class="tag">Standard library</span>
+          <span class="tag">SHA-256</span>
+          <span class="tag">Local HTTP workbench</span>
+          <span class="tag">unittest</span>
+        </div>
+      </div>
+
+      <div class="next-prev">
+        <a href="quant-agent.html"><span>Next project</span><b>Quant Agent →</b></a>
+        <a href="../work.html"><span>All projects</span><b>Back to work →</b></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <div class="footer-brand"><b>Yansong Li</b> · Engineer & builder</div>
+      <div class="footer-links"><a href="../index.html">Home</a><a href="../work.html">Work</a><a href="https://github.com/C12isme945" target="_blank" rel="noopener">GitHub</a></div>
+      <div class="footer-note">© 2026 Yansong Li.</div>
+    </div>
+  </footer>
+  <script src="../app.js"></script>
+</body>
+</html>

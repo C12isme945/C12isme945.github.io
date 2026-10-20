@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="zh-CN"><head><link rel="icon" type="image/svg+xml" href="../favicon.svg"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HA–肽方法学论文 · 交互式汇报（v15.57 候选稿）</title>
+<style>:root{--ink:#EAF1FF;--dim:#8FA3C7;--acc:#5EF2DC;--vio:#9B87FF;--amb:#FFB057;--red:#FF5D6C;--soft:#C8D4EA;--sky:#6FD3FF;--pur:#C38BFF;
+--serif:"Noto Serif CJK SC","Source Han Serif SC","Songti SC","STSong","SimSun",serif;
+--sans:"PingFang SC","Microsoft YaHei","Noto Sans CJK SC","Noto Sans SC","Hiragino Sans GB",sans-serif;
+--mono:Consolas,"Liberation Mono","Courier New",monospace;--latin:Georgia,"Times New Roman",serif;--num:Cambria,"Times New Roman","Noto Serif CJK SC",serif;--ease:cubic-bezier(.2,.75,.2,1)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#02050d;overflow:hidden;color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+#bg{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+#vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,rgba(0,0,0,0) 52%,rgba(0,0,0,.72) 100%)}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;margin:-540px 0 0 -960px;transform-origin:50% 50%}
+.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transform:scale(1.035);transition:opacity .75s ease,transform 1s var(--ease),visibility 0s linear .75s}
+.slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .75s ease .1s,transform 1s var(--ease) .1s,visibility 0s}
+.slide.past{transform:scale(.965)}
+.b{opacity:0;transform:translateY(26px);transition:opacity .7s ease var(--d,0s),transform .85s var(--ease) var(--d,0s),filter .7s ease var(--d,0s)}
+.b.fade{transform:none}.b.zoom{transform:scale(.86)}.b.left{transform:translateX(-46px)}.b.right{transform:translateX(46px)}.b.blur{filter:blur(14px);transform:scale(1.04)}
+.b.on{opacity:1;transform:none;filter:none}
+.noanim *,.noanim *::before,.noanim *::after{transition:none!important;animation-duration:0s!important;animation-delay:0s!important}
+.abs{position:absolute}
+.kicker{font:600 21px/1 var(--mono);letter-spacing:.34em;color:var(--acc);text-transform:uppercase}
+.h1{font:700 74px/1.22 var(--serif);letter-spacing:.02em;margin:0}
+.h2{font:700 52px/1.25 var(--serif);letter-spacing:.02em;margin:0}
+.h3{font:700 32px/1.3 var(--serif);margin:0}
+.lead{font:400 27px/1.6 var(--sans);color:var(--soft)}
+.small{font:400 21px/1.55 var(--sans);color:var(--soft)}
+.src{font:400 16px/1.4 var(--mono);color:var(--dim);letter-spacing:.04em}
+.mono{font-family:var(--mono)}.latin{font-family:var(--latin)}
+.acc{color:var(--acc)}.vio{color:var(--vio)}.amb{color:var(--amb)}.red{color:var(--red)}.dim{color:var(--dim)}.sky{color:var(--sky)}.pur{color:var(--pur)}
+.hd{position:absolute;left:130px;top:92px;right:130px}
+.hd .kicker{margin-bottom:22px}
+.glass{background:linear-gradient(160deg,rgba(34,50,92,.58),rgba(9,15,34,.62));border:1px solid rgba(143,163,199,.24);border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);backdrop-filter:blur(10px)}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:999px;border:1px solid rgba(94,242,220,.55);background:rgba(94,242,220,.09);color:var(--acc);font:600 20px/1 var(--sans);letter-spacing:.06em;transition:background .25s,transform .25s,box-shadow .25s}
+.btn:hover{background:rgba(94,242,220,.2);transform:translateY(-2px);box-shadow:0 0 28px rgba(94,242,220,.3)}
+.btn.v{border-color:rgba(155,135,255,.6);background:rgba(155,135,255,.1);color:#CFC4FF}.btn.v:hover{background:rgba(155,135,255,.22);box-shadow:0 0 28px rgba(155,135,255,.3)}
+.btn.ghost{border-color:rgba(143,163,199,.4);background:rgba(143,163,199,.07);color:var(--soft)}
+.tag{display:inline-block;padding:6px 14px;border-radius:8px;font:600 16px/1.2 var(--mono);letter-spacing:.05em;border:1px solid currentColor}
+.hint{font:400 17px/1 var(--sans);color:var(--dim);letter-spacing:.08em}
+.hint b{font-family:var(--mono);color:var(--soft);border:1px solid rgba(143,163,199,.4);border-radius:6px;padding:3px 8px;margin:0 4px;font-weight:600}
+/* HUD */
+#hud{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:6px;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(8,14,30,.78);border:1px solid rgba(143,163,199,.25);backdrop-filter:blur(10px);z-index:50;transition:opacity .5s,transform .5s;font-family:var(--sans)}
+#hud.hide{opacity:0;transform:translate(-50%,14px);pointer-events:none}
+#hud button{background:none;border:0;color:var(--soft);font:500 15px/1 var(--sans);padding:9px 12px;border-radius:999px;letter-spacing:.04em}
+#hud button:hover{background:rgba(94,242,220,.14);color:var(--acc)}
+#hud .cnt{font:600 15px/1 var(--mono);color:var(--acc);padding:0 10px;min-width:92px;text-align:center}
+#prog{position:fixed;left:0;right:0;bottom:0;height:3px;background:rgba(143,163,199,.12);z-index:49}
+#prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--vio));box-shadow:0 0 12px var(--acc);transition:width .6s var(--ease)}
+.final #hud,.final #prog{display:none}
+#black{position:fixed;inset:0;background:#000;z-index:80;opacity:0;pointer-events:none;transition:opacity .4s}
+#black.on{opacity:1;pointer-events:auto}
+.ov{position:fixed;inset:0;z-index:60;display:none;background:rgba(2,5,13,.82);backdrop-filter:blur(8px)}
+.ov.on{display:block}
+#toc .grid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(1180px,92vw);display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+#toc h4{position:absolute;left:50%;top:7vh;transform:translateX(-50%);margin:0;font:600 18px/1 var(--mono);letter-spacing:.3em;color:var(--acc)}
+#toc .it{padding:18px 18px 20px;border-radius:14px;border:1px solid rgba(143,163,199,.25);background:rgba(20,30,60,.55);color:var(--ink);cursor:pointer;text-align:left;transition:.2s}
+#toc .it:hover,#toc .it.cur{border-color:var(--acc);background:rgba(94,242,220,.1)}
+#toc .it span{display:block;font:600 14px/1 var(--mono);color:var(--acc);margin-bottom:10px}
+#toc .it strong{font:600 18px/1.4 var(--sans)}
+#notesbar{position:fixed;left:50%;bottom:72px;transform:translateX(-50%);width:min(1100px,90vw);max-height:34vh;overflow:auto;z-index:55;display:none;padding:20px 26px;border-radius:16px;background:rgba(6,11,26,.92);border:1px solid rgba(155,135,255,.4);font:400 18px/1.75 var(--sans);color:var(--soft)}
+#notesbar.on{display:block}
+#notesbar h5{margin:0 0 8px;font:600 14px/1 var(--mono);letter-spacing:.2em;color:var(--vio)}
+#vidov{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center}
+#vidov.on{display:flex}
+#vidov video{max-width:92vw;max-height:86vh;border-radius:10px;box-shadow:0 0 80px rgba(94,242,220,.18)}
+#vidov .x{position:absolute;top:22px;right:28px;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;padding:10px 18px;font:500 16px var(--sans)}
+/* modal inside stage */
+#modal{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:rgba(2,5,13,.7);opacity:0;pointer-events:none;transition:opacity .35s}
+#modal.on{opacity:1;pointer-events:auto}
+#modal .box{width:1360px;max-height:980px;overflow:auto;padding:44px 60px;transform:translateY(24px) scale(.98);transition:transform .45s var(--ease)}
+#modal.on .box{transform:none}
+#modal .x{position:absolute;margin-left:1180px;margin-top:-30px}
+.mx{float:right;margin:-26px -30px 0 0;background:none;border:1px solid rgba(143,163,199,.4);color:var(--soft);border-radius:999px;width:46px;height:46px;font:400 24px/1 var(--sans)}
+.mx:hover{color:var(--acc);border-color:var(--acc)}
+.quote{font:italic 400 25px/1.55 var(--latin);color:var(--ink);border-left:3px solid var(--acc);padding:4px 0 4px 26px;margin:22px 0}
+.reflist{margin:26px 0 0;padding:0;list-style:none}
+.reflist li{font:400 16.5px/1.5 var(--latin);color:var(--soft);padding:7px 0;border-top:1px solid rgba(143,163,199,.15)}
+.reflist li b{font-family:var(--mono);color:var(--acc);margin-right:10px}
+
+/* ---- S1 title ---- */
+#s1 .wrap{position:absolute;left:150px;top:220px;right:150px}
+#s1 .t-zh{font:700 82px/1.25 var(--serif);margin:34px 0 26px;background:linear-gradient(100deg,#fff 10%,#BFF9F0 45%,#C9BEFF 90%);-webkit-background-clip:text;background-clip:text;color:transparent}
+#s1 .t-en{font:italic 400 31px/1.45 var(--latin);color:var(--soft);max-width:1400px}
+#s1 .tagline{margin-top:54px;font:500 34px/1 var(--serif);letter-spacing:.32em;color:var(--acc)}
+#s1 .tagline i{font-style:normal;color:var(--dim);margin:0 .2em}
+#s1 .ctl{position:absolute;left:150px;bottom:150px;display:flex;gap:26px;align-items:center}
+#s1 .foot,.foot{position:absolute;left:150px;right:150px;bottom:72px;font:400 18px/1.4 var(--sans);color:var(--dim);letter-spacing:.06em;border-top:1px solid rgba(143,163,199,.18);padding-top:20px;display:flex;justify-content:space-between}
+#vbtn[hidden]{display:none}
+.line-deco{position:absolute;left:150px;top:200px;width:120px;height:2px;background:linear-gradient(90deg,var(--acc),transparent)}
+
+/* ---- S2 cold open ---- */
+#s2 .cold{position:absolute;left:0;right:0;top:300px;text-align:center}
+#s2 .cold div{font:700 88px/1.55 var(--serif);letter-spacing:.06em}
+#s2 .cold .l3{background:linear-gradient(90deg,var(--acc),var(--vio));-webkit-background-clip:text;background-clip:text;color:transparent}
+#s2 .sub{position:absolute;left:0;right:0;top:760px;text-align:center;font:400 28px/1.7 var(--sans);color:var(--soft)}
+#s2 .sub em{font-style:normal;color:var(--amb)}
+
+/* ---- S3 orbit ---- */
+#s3 .orbit{position:absolute;left:0;top:0;width:1250px;height:1080px}
+#s3 svg.lines{position:absolute;inset:0;width:1250px;height:1080px;pointer-events:none}
+#s3 .core{position:absolute;left:560px;top:445px;width:280px;height:280px;margin:0;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 40% 35%,rgba(94,242,220,.35),rgba(20,40,80,.85) 70%);border:2px solid rgba(94,242,220,.7);box-shadow:0 0 70px rgba(94,242,220,.35),inset 0 0 40px rgba(94,242,220,.2);transition:all .9s var(--ease)}
+#s3 .core b{font:700 46px/1.1 var(--serif)}
+#s3 .core small{font:400 18px/1.4 var(--sans);color:var(--soft);margin-top:10px;padding:0 26px}
+#s3.cmp .core{border-color:rgba(255,93,108,.6);box-shadow:0 0 40px rgba(255,93,108,.25);background:radial-gradient(circle at 40% 35%,rgba(255,93,108,.18),rgba(20,26,50,.9) 70%);transform:scale(.86)}
+#s3 .chip{position:absolute;left:0;top:0;transform:translate(-50%,-50%);padding:15px 24px;border-radius:999px;white-space:nowrap;font:600 23px/1 var(--sans);color:var(--ink);background:rgba(16,28,58,.86);border:1.5px solid var(--cc,var(--acc));box-shadow:0 0 22px color-mix(in srgb,var(--cc,var(--acc)) 35%,transparent);cursor:pointer;transition:opacity .7s ease,filter .7s ease,background .25s,box-shadow .25s;user-select:none}
+#s3 .chip i{font-style:normal;font:600 15px/1 var(--mono);color:var(--cc);margin-right:10px}
+#s3 .chip:hover,#s3 .chip.sel{background:color-mix(in srgb,var(--cc) 26%,rgba(16,28,58,.9));box-shadow:0 0 36px color-mix(in srgb,var(--cc) 60%,transparent)}
+#s3.cmp .chip{opacity:0;filter:blur(10px);pointer-events:none}
+#s3 .sweep{position:absolute;top:150px;bottom:110px;left:-40px;width:8px;background:linear-gradient(180deg,transparent,var(--red),transparent);box-shadow:0 0 40px 12px rgba(255,93,108,.35);opacity:0}
+#s3.cmp .sweep{animation:sweep 1.5s ease-in-out forwards}
+@keyframes sweep{0%{left:-40px;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:1250px;opacity:0}}
+#s3 .cmpmsg{position:absolute;left:330px;top:885px;width:740px;text-align:center;font:500 26px/1.55 var(--sans);color:#FFB3BA;opacity:0;transition:opacity .7s .9s}
+#s3.cmp .cmpmsg{opacity:1}
+#s3 .restore{position:absolute;left:330px;top:885px;width:740px;text-align:center}
+#s3 .restore>div:first-child{font:700 44px/1.3 var(--serif)}
+#s3 .panel{position:absolute;left:1270px;top:250px;width:520px;height:640px;padding:40px 42px}
+#s3 .panel .no{font:600 16px/1 var(--mono);letter-spacing:.2em;color:var(--cc,var(--acc))}
+#s3 .panel h3{font:700 36px/1.3 var(--serif);margin:16px 0 22px;color:var(--ink)}
+#s3 .panel .lab{font:600 16px/1 var(--mono);letter-spacing:.18em;color:var(--dim);margin:20px 0 10px}
+#s3 .panel p{margin:0;font:400 21px/1.62 var(--sans);color:var(--soft)}
+#s3 .panel p.cons{color:var(--ink);font-weight:500}
+#s3 .panel .pf{position:absolute;left:42px;right:42px;bottom:28px;font:400 15px/1.5 var(--sans);color:var(--dim);border-top:1px solid rgba(143,163,199,.18);padding-top:14px}
+#s3 .ctl{position:absolute;left:1270px;top:920px;display:flex;gap:16px}
+#s3 .panel .body{transition:opacity .3s}
+
+/* ---- S4 constellation ---- */
+#s4 canvas{position:absolute;left:0;top:0;width:1920px;height:1080px;cursor:grab}
+#s4 canvas.drag{cursor:grabbing}
+#s4 .cnt4{position:absolute;left:130px;top:215px;display:flex;gap:64px;pointer-events:none}
+#s4 .cnt4 div{display:flex;flex-direction:column}
+#s4 .cnt4 b{font:700 68px/1 var(--num);color:var(--ink)}
+#s4 .cnt4 span{font:400 19px/1.3 var(--sans);color:var(--dim);margin-top:10px;letter-spacing:.06em}
+#s4 .cnt4 div:nth-child(1) b{color:var(--sky)}#s4 .cnt4 div:nth-child(2) b{color:var(--acc)}#s4 .cnt4 div:nth-child(3) b{color:var(--vio)}#s4 .cnt4 div:nth-child(4) b{color:var(--amb)}
+#s4 .legend{position:absolute;left:130px;bottom:120px;display:flex;gap:30px;font:400 18px/1 var(--sans);color:var(--soft);pointer-events:none}
+#s4 .legend i{display:inline-block;width:13px;height:13px;border-radius:50%;margin-right:9px;vertical-align:-1px}
+#s4 .cap{position:absolute;left:130px;bottom:68px;font:500 22px/1 var(--serif);letter-spacing:.3em;color:var(--acc);pointer-events:none}
+#s4 .tip{position:absolute;pointer-events:none;padding:12px 16px;border-radius:12px;background:rgba(6,12,28,.94);border:1px solid rgba(94,242,220,.5);font:400 16px/1.45 var(--sans);color:var(--soft);max-width:420px;opacity:0;transition:opacity .15s;z-index:5}
+#s4 .tip b{color:var(--acc);font-family:var(--mono);font-size:14px}
+#s4 .dragh{position:absolute;right:130px;bottom:120px;pointer-events:none}
+#s4 .rp{position:absolute;left:1268px;top:150px;width:560px;height:820px;padding:34px 38px;overflow:hidden;opacity:0;transform:translateX(40px);pointer-events:none;transition:opacity .45s,transform .55s var(--ease)}
+#s4 .rp.on{opacity:1;transform:none;pointer-events:auto}
+#s4.rpon .dragh{opacity:0!important}
+#s4 .rp .id{font:600 15px/1.4 var(--mono);color:var(--acc);word-break:break-all;padding-right:40px}
+#s4 .rp .badge{display:inline-block;margin:14px 0 6px;padding:7px 12px;border-radius:8px;background:rgba(255,176,87,.12);border:1px solid rgba(255,176,87,.55);color:var(--amb);font:600 15px/1.2 var(--sans)}
+#s4 .rp dl{margin:12px 0 0;display:grid;grid-template-columns:110px 1fr;gap:9px 14px;font:400 17px/1.45 var(--sans)}
+#s4 .rp dt{color:var(--dim);font-family:var(--mono);font-size:14px;padding-top:3px;letter-spacing:.06em}
+#s4 .rp dd{margin:0;color:var(--ink);word-break:break-word}
+#s4 .rp dd.na{color:var(--amb);font-size:15px}
+#s4 .rp dd .kv{display:block;font-size:15.5px;color:var(--soft)}
+#s4 .rp dd .kv em{font-style:normal;color:var(--vio);font-family:var(--mono);font-size:13.5px;margin-right:6px}
+#s4 .rp .loc{font:400 13.5px/1.45 var(--mono);color:var(--dim);word-break:break-all}
+#s4 .rp .mx{position:absolute;right:26px;top:26px;float:none;margin:0}
+
+/* ---- S5 same-fact ---- */
+#s5 .policy{position:absolute;left:130px;right:130px;top:282px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+#s5 .policy span{padding:10px 18px;border-radius:999px;border:1px solid rgba(94,242,220,.4);background:rgba(94,242,220,.07);font:500 18px/1 var(--sans);color:var(--soft)}
+#s5 .policy span:first-child{border:0;background:none;color:var(--acc);font-family:var(--mono);letter-spacing:.2em}
+#s5 .box5{position:absolute;top:360px;width:720px;height:390px;padding:26px 30px;transition:opacity .8s}
+#s5 .box5.l{left:140px}#s5 .box5.r{left:1060px}
+#s5 .box5 h4{margin:0;font:700 26px/1.2 var(--sans)}#s5 .box5 h4 small{font:400 17px var(--mono);color:var(--dim);margin-left:12px}
+#s5.k1 .box5{opacity:.32}
+#s5 svg.g{position:absolute;left:30px;top:76px;width:660px;height:290px}
+#s5 .g line{stroke:rgba(143,163,199,.35);stroke-width:2}
+#s5 .g circle{fill:#16244a;stroke:rgba(143,163,199,.55);stroke-width:2}
+#s5 .g .hit{animation:nodeOn 4.8s ease infinite;animation-delay:var(--t)}
+#s5 .g line.hit{animation-name:edgeOn}
+@keyframes nodeOn{0%,4%{fill:#16244a;stroke:rgba(143,163,199,.55)}12%,80%{fill:#5EF2DC;stroke:#BFFFF5}94%,100%{fill:#16244a;stroke:rgba(143,163,199,.55)}}
+@keyframes edgeOn{0%,4%{stroke:rgba(143,163,199,.35)}12%,80%{stroke:#5EF2DC}94%,100%{stroke:rgba(143,163,199,.35)}}
+#s5 .tbl{position:absolute;left:30px;right:30px;top:80px;font:400 15px/1 var(--mono);color:var(--dim)}
+#s5 .tbl div{display:grid;grid-template-columns:70px 1fr 1fr 1fr;gap:10px;padding:6px 12px;border-radius:6px;margin-bottom:3px;background:rgba(143,163,199,.06)}
+#s5 .tbl div.hd5{background:none;color:var(--vio);font-weight:600}
+#s5 .tbl .hit{animation:rowOn 4.8s ease infinite;animation-delay:var(--t)}
+@keyframes rowOn{0%,4%{background:rgba(143,163,199,.06);color:var(--dim)}12%,80%{background:rgba(155,135,255,.3);color:#fff}94%,100%{background:rgba(143,163,199,.06);color:var(--dim)}}
+#s5 .scanbar{position:absolute;left:0;right:0;top:31px;height:28px;border-radius:6px;background:rgba(155,135,255,.18);border:1px solid rgba(155,135,255,.6);animation:scan 4.8s linear infinite}
+@keyframes scan{0%{transform:translateY(0)}80%{transform:translateY(217px)}100%{transform:translateY(217px);opacity:0}}
+#s5 .strip{position:absolute;top:790px;display:flex;gap:6px;transition:transform 1.2s var(--ease),top 1.2s var(--ease)}
+#s5 .strip i{display:block;width:44px;height:44px;border-radius:6px;opacity:.18;animation:fill 4.8s ease infinite;animation-delay:calc(var(--k)*.18s + 1.4s)}
+#s5 .strip.l{left:155px}#s5 .strip.r{left:1075px}
+#s5 .strip.l i{background:var(--acc)}#s5 .strip.r i{background:var(--vio)}#s5 .strip.r{mix-blend-mode:screen}
+@keyframes fill{0%{opacity:.18}8%,85%{opacity:1}100%{opacity:.18}}
+#s5 .slab{position:absolute;top:850px;font:400 16px/1 var(--mono);color:var(--dim);transition:opacity .6s}
+#s5 .slab.l{left:155px}#s5 .slab.r{left:1075px}
+#s5.k1 .slab{opacity:0}
+#s5.k1 .strip i{animation:none;opacity:1}
+#s5.k1 .strip.l{transform:translateX(508px)}#s5.k1 .strip.r{transform:translateX(-412px)}
+#s5 .diff{position:absolute;left:663px;top:782px;width:594px;height:60px;pointer-events:none;opacity:0}
+#s5 .diff::before{content:"";position:absolute;top:-10px;bottom:-10px;left:0;width:4px;background:#fff;box-shadow:0 0 24px 6px rgba(255,255,255,.6)}
+#s5.k1 .diff{opacity:1}
+#s5.k1 .diff::before{animation:dscan 1.6s ease-in-out 1.2s both}
+@keyframes dscan{0%{left:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{left:590px;opacity:0}}
+#s5 .dz{position:absolute;left:0;right:0;top:880px;text-align:center;font:700 40px/1 var(--mono);letter-spacing:.14em;color:#fff;text-shadow:0 0 24px rgba(94,242,220,.8)}
+#s5 .k1t{transition-delay:2.6s!important}
+#s5 .parity{position:absolute;left:0;right:0;top:350px;display:flex;justify-content:center;gap:40px;pointer-events:none}
+#s5 .pcard{width:440px;padding:36px 30px;text-align:center}
+#s5 .pcard b{display:block;font:700 96px/1 var(--num);color:var(--acc)}
+#s5 .pcard span{display:block;margin-top:16px;font:500 24px/1.4 var(--sans)}
+#s5 .pbadge{display:flex;flex-direction:column;align-items:center;justify-content:center;width:300px;padding:30px;border-radius:50%;aspect-ratio:1;border:2px solid var(--acc);background:radial-gradient(circle,rgba(94,242,220,.25),rgba(8,18,40,.9));box-shadow:0 0 60px rgba(94,242,220,.4)}
+#s5 .pbadge b{font:700 34px/1.2 var(--serif)}#s5 .pbadge small{font:600 18px/1 var(--mono);letter-spacing:.3em;color:var(--acc);margin-top:12px}
+#s5.k2 .box5{opacity:.12}
+#s5 .ctl{position:absolute;right:130px;top:104px}
+
+/* ---- S6 Δgraph ---- */
+#s6 .lhs{position:absolute;left:130px;top:250px;width:760px}
+#s6 .dg{white-space:nowrap;font:700 140px/1 var(--num);letter-spacing:-.01em;margin:30px 0 30px;background:linear-gradient(90deg,#fff,var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+#s6 .dg span{font-style:italic}
+#s6 .lhs .h3{color:var(--ink)}
+#s6 .rhs{position:absolute;left:990px;top:230px;width:820px;padding:40px 44px}
+#s6 .rings{display:flex;gap:40px;justify-content:center;margin-top:20px}
+#s6 .ring{position:relative;width:300px;height:300px}
+#s6 .ring svg{width:300px;height:300px;transform:rotate(-90deg)}
+#s6 .ring circle{fill:none;stroke-width:22}
+#s6 .ring .bgc{stroke:rgba(143,163,199,.15)}
+#s6 .ring .fg{stroke-linecap:round;stroke-dasharray:0 1000;transition:stroke-dasharray 1.8s var(--ease) .3s}
+#s6 .ring .v{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#s6 .ring .v b{font:700 60px/1 var(--num)}
+#s6 .ring .v span{font:500 19px/1.3 var(--sans);color:var(--soft);margin-top:10px;text-align:center}
+#s6 .cq{text-align:center;margin-top:18px;font:400 20px/1.5 var(--sans);color:var(--soft)}
+#s6 .caveat{margin-top:22px;padding:18px 22px;border-radius:14px;border:1px dashed rgba(255,176,87,.55);background:rgba(255,176,87,.06);font:400 18px/1.6 var(--sans);color:#FFD9A8}
+#s6 .rhs .ctl{margin-top:20px;display:flex;justify-content:space-between;align-items:center}
+.db{width:100%}
+.db .row{display:grid;grid-template-columns:120px 1fr 90px;align-items:center;height:23px}
+.db .row span{font:400 14px/1 var(--mono);color:var(--dim)}
+.db .row em{font:600 14px/1 var(--mono);font-style:normal;text-align:right}
+.db .trk{position:relative;height:23px}
+.db .trk::before{content:"";position:absolute;left:0;right:0;top:11px;height:1px;background:rgba(143,163,199,.14)}
+.db .seg{position:absolute;top:10px;height:3px;border-radius:2px}
+.db .dot{position:absolute;top:4px;width:15px;height:15px;margin-left:-7.5px;border-radius:50%}
+.db .ax{display:grid;grid-template-columns:120px 1fr 90px;font:400 13px/1 var(--mono);color:var(--dim);margin-top:8px}
+.db .ax div{display:flex;justify-content:space-between}
+
+/* ---- S7 layers ---- */
+#s7 .iso{position:absolute;left:110px;top:150px;width:1000px;height:820px}
+#s7 .iso svg{width:1000px;height:820px;overflow:visible}
+#s7 .lay{cursor:pointer;transition:transform .35s var(--ease)}
+#s7 .lay:hover{transform:translateY(-10px)}
+#s7 .lay .top{stroke-width:2}
+#s7 .lay.sel .top{stroke-width:3.5;filter:url(#glow)}
+#s7 .lay text{font-family:var(--sans)}
+#s7 .sigma{position:absolute;left:330px;top:-30px;width:200px;height:200px;pointer-events:none;opacity:0}
+#s7 .sigma span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 190px/1 var(--latin);color:var(--amb);text-shadow:0 0 40px rgba(255,176,87,.7)}
+#s7.k1 .sigma{animation:sdrop 1.1s cubic-bezier(.5,0,.9,.4) forwards}
+@keyframes sdrop{0%{opacity:0;transform:translateY(-160px)}20%{opacity:1}100%{opacity:1;transform:translateY(150px)}}
+#s7.k1 .sigma span{animation:shard 1s ease-out 1.05s forwards}
+@keyframes shard{0%{transform:none;opacity:1}100%{transform:translate(var(--x),var(--y)) rotate(var(--r)) scale(.6);opacity:0}}
+#s7 .nosum{position:absolute;left:285px;top:505px;width:520px;text-align:center;padding:26px 20px;border-radius:20px;border:2px solid rgba(255,176,87,.85);background:rgba(8,12,28,.9);box-shadow:0 0 50px rgba(255,176,87,.3);pointer-events:none;rotate:-3deg}
+#s7 .nosum>div:first-child{font:700 50px/1.2 var(--serif);color:var(--amb);letter-spacing:.12em}
+#s7 .k1d{transition-delay:1.6s!important}
+#s7 .lp{position:absolute;left:1150px;top:200px;width:670px;height:720px;padding:38px 42px;overflow:hidden}
+#s7 .lp .no{font:600 16px/1 var(--mono);letter-spacing:.2em;color:var(--lc,var(--acc))}
+#s7 .lp h3{margin:12px 0 4px;font:700 34px/1.3 var(--serif)}
+#s7 .lp .en{font:italic 400 20px/1.3 var(--latin);color:var(--dim)}
+#s7 .lp .lab{font:600 15px/1 var(--mono);letter-spacing:.16em;color:var(--dim);margin:22px 0 9px}
+#s7 .lp p{margin:0;font:400 19.5px/1.6 var(--sans);color:var(--soft)}
+#s7 .lp p.ok{color:var(--ink)}
+#s7 .lp p.no2{color:#FFC4A0}
+#s7 .lp ul{margin:0;padding:0;list-style:none}
+#s7 .lp li{font:400 18.5px/1.55 var(--sans);color:var(--ink);padding:10px 0 10px 18px;border-left:3px solid var(--lc,var(--acc));margin-bottom:8px;background:rgba(255,255,255,.025)}
+#s7 .lp li .src{display:block;margin-top:4px}
+#s7 .scf{position:absolute;left:1150px;top:948px}
+#s7 .hint7{position:absolute;left:1440px;top:962px;font-size:15px;width:400px;line-height:1.5}
+
+/* ---- S8 cards ---- */
+#s8 .grid{position:absolute;left:150px;top:300px;display:grid;grid-template-columns:repeat(3,520px);grid-template-rows:repeat(2,300px);gap:40px 40px}
+.flip{perspective:1600px;cursor:pointer}
+.flip .in{position:relative;width:100%;height:100%;transition:transform .8s var(--ease);transform-style:preserve-3d}
+.flip.fl .in{transform:rotateY(180deg)}
+.flip .fa,.flip .ba{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;padding:34px 38px;border-radius:22px}
+.flip .ba{transform:rotateY(180deg)}
+#s8 .fa b{display:block;font:700 100px/1 var(--num);color:var(--cc)}
+#s8 .fa span{display:block;margin-top:20px;font:600 26px/1.35 var(--sans)}
+#s8 .fa small{position:absolute;left:38px;bottom:28px;font:400 15px/1 var(--mono);color:var(--dim);letter-spacing:.1em}
+#s8 .fa small::after{content:"  ·  点击翻面"}
+#s8 .ba p{margin:0;font:400 21px/1.62 var(--sans);color:var(--soft)}
+#s8 .ba p b{color:var(--ink)}
+#s8 .ba .src{position:absolute;left:38px;bottom:26px}
+#s8 .ba h5{margin:0 0 12px;font:600 16px/1 var(--mono);letter-spacing:.16em;color:var(--cc)}
+#s8 .fa{border-top:3px solid var(--cc)!important}
+
+/* ---- S9 related ---- */
+#s9 .rt{position:absolute;left:130px;right:130px;top:285px}
+#s9 .rr{display:grid;grid-template-columns:260px 380px 1fr;gap:0 34px;align-items:center;padding:28px 30px;border-radius:16px;margin-bottom:16px;cursor:pointer;transition:background .25s,border-color .25s}
+#s9 .rr.hd9{cursor:default;padding-top:0;padding-bottom:8px;font:600 15px/1 var(--mono);letter-spacing:.18em;color:var(--dim)}
+#s9 .rr:not(.hd9){background:rgba(20,32,66,.5);border:1px solid rgba(143,163,199,.18)}
+#s9 .rr:not(.hd9):not(.me):hover{background:rgba(94,242,220,.08);border-color:rgba(94,242,220,.5)}
+#s9 .rr .n{font:700 27px/1.3 var(--sans)}
+#s9 .rr .w{font:400 18px/1.45 var(--latin);color:var(--soft)}
+#s9 .rr .w sup{font-family:var(--mono);color:var(--acc)}
+#s9 .rr .r{font:400 20px/1.55 var(--sans);color:var(--soft)}
+#s9 .rr .r b{color:var(--ink);font-weight:600}
+#s9 .rr.me{background:linear-gradient(90deg,rgba(94,242,220,.16),rgba(155,135,255,.12));border:1.5px solid rgba(94,242,220,.65);cursor:default}
+#s9 .rr.me .n{color:var(--acc)}
+#s9 .note9{position:absolute;left:130px;bottom:78px;font:500 22px/1 var(--sans);color:var(--amb);letter-spacing:.08em}
+#s9 .note9 span{color:var(--dim);font-size:17px;margin-left:24px;letter-spacing:.04em}
+
+/* ---- S10 sliders ---- */
+#s10 .pp{position:absolute;top:270px;width:790px;height:620px;padding:34px 38px}
+#s10 .pp.pa{left:130px}#s10 .pp.pb{left:1000px}
+#s10 .pp h4{margin:0;font:700 30px/1.2 var(--serif)}
+#s10 .pp h4 small{font:400 17px var(--sans);color:var(--dim);margin-left:12px}
+#s10 .rw{display:grid;grid-template-columns:150px 1fr 108px;align-items:center;gap:18px;margin-top:22px;height:76px}
+#s10 .rw .lb{font:600 20px/1.3 var(--sans);color:var(--soft)}
+#s10 .rw .val{position:relative;height:76px;border-radius:12px;background:rgba(255,255,255,.035);overflow:hidden;padding:10px 16px}
+#s10 .rw .val .tx{position:absolute;left:16px;top:10px;font:500 18px/1.2 var(--sans);transition:opacity .15s}
+#s10 .rw .bars{position:absolute;left:16px;right:16px;bottom:9px;height:28px;display:flex;gap:4px;align-items:flex-end}
+#s10 .rw .bars i{flex:1;border-radius:2px 2px 0 0;background:var(--bc,var(--amb))}
+#s10 .rw .st{font:600 16px/1 var(--sans);padding:9px 0;text-align:center;border-radius:999px;border:1px solid}
+#s10 .st.chg{color:var(--red);border-color:rgba(255,93,108,.6);background:rgba(255,93,108,.08)}
+#s10 .st.same{color:var(--dim);border-color:rgba(143,163,199,.35)}
+#s10 .st.lock{color:var(--acc);border-color:rgba(94,242,220,.6);background:rgba(94,242,220,.08)}
+#s10 .sl{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;margin-top:28px;font:500 17px/1 var(--sans);color:var(--dim)}
+#s10 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--acc),var(--vio));outline:none}
+#s10 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:0 0 18px rgba(94,242,220,.8);cursor:pointer}
+#s10 .out{margin-top:24px;font:500 21px/1.5 var(--sans);text-align:center;padding:14px;border-radius:12px}
+#s10 .out.bad{color:#FFB3BA;background:rgba(255,93,108,.07)}
+#s10 .out.good{color:#BFFFF5;background:rgba(94,242,220,.08)}
+#s10 .foot10{position:absolute;left:130px;right:130px;bottom:68px;display:flex;justify-content:space-between;align-items:center}
+#s10 .foot10 .src{max-width:1380px;line-height:1.6}
+
+/* ---- S11 significance ---- */
+#s11 .grid{position:absolute;left:130px;right:130px;top:280px;display:grid;grid-template-columns:repeat(4,1fr);gap:30px;height:480px}
+#s11 .fa .ic{width:66px;height:66px;border-radius:18px;display:flex;align-items:center;justify-content:center;font:700 32px/1 var(--num);color:#071022;background:var(--cc)}
+#s11 .fa h4{margin:26px 0 16px;font:700 30px/1.35 var(--serif);color:var(--ink)}
+#s11 .fa p{margin:0;font:400 21px/1.7 var(--sans);color:var(--soft)}
+#s11 .fa small{position:absolute;left:38px;bottom:26px;font:400 15px/1 var(--mono);color:var(--dim);letter-spacing:.08em}
+#s11 .ba p{margin:0;font:italic 400 21px/1.6 var(--latin);color:var(--ink)}
+#s11 .ba .src{position:absolute;left:38px;bottom:26px}
+#s11 .fa{border-top:3px solid var(--cc)!important}
+#s11 .punch{position:absolute;left:0;right:0;top:830px;text-align:center}
+#s11 .punch div{font:700 50px/1.3 var(--serif);background:linear-gradient(90deg,var(--acc),#fff 50%,var(--vio));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ---- S12 end ---- */
+#s12 .wrap{position:absolute;left:150px;right:150px;top:190px}
+#s12 .t{font:700 56px/1.3 var(--serif);margin:26px 0 12px}
+#s12 .te{font:italic 400 25px/1.45 var(--latin);color:var(--dim)}
+#s12 .bd{margin-top:52px;display:grid;grid-template-columns:1fr 1fr;gap:34px}
+#s12 .bd .glass{padding:32px 36px}
+#s12 .bd h5{margin:0 0 16px;font:600 16px/1 var(--mono);letter-spacing:.2em}
+#s12 .bd p{margin:0;font:500 25px/1.6 var(--sans)}
+#s12 .bd ul{margin:0;padding:0;list-style:none}
+#s12 .bd li{font:400 22px/1.5 var(--sans);color:var(--soft);padding:6px 0 6px 28px;position:relative}
+#s12 .bd li::before{content:"";position:absolute;left:4px;top:18px;width:10px;height:10px;border-radius:50%;background:var(--vio)}
+#s12 .thx{position:absolute;left:0;right:0;top:770px;text-align:center;font:700 64px/1 var(--serif);letter-spacing:.3em}
+</style></head><body>
+<canvas id="bg"></canvas><div id="vig"></div>
+<div id="stage">
+
+<section class="slide" id="s1" data-steps="0" data-title="标题">
+  <div class="line-deco b fade" data-s="0"></div>
+  <div class="wrap">
+    <div class="kicker b" data-s="0">Methods Paper · 方法学论文</div>
+    <div class="t-zh b" data-s="0" style="--d:.15s">面向透明质酸–肽研究的<br>条件感知证据整理与有边界的 AI 诊断</div>
+    <div class="t-en b" data-s="0" style="--d:.35s">Condition-aware evidence curation and bounded AI diagnostics for hyaluronic acid–peptide research</div>
+    <div class="tagline b" data-s="0" style="--d:.6s">可审计<i>·</i>有边界<i>·</i>对局限诚实</div>
+  </div>
+  <div class="ctl b" data-s="0" style="--d:.9s">
+    <button class="btn" id="vbtn" hidden>▶ 播放宣传片</button>
+    <span class="hint"><b>→</b>/<b>空格</b> 下一步　<b>T</b> 目录　<b>N</b> 讲稿　<b>P</b> 演讲者视图　<b>F</b> 全屏　<b>B</b> 黑屏</span>
+  </div>
+  <div class="foot b fade" data-s="0" style="--d:1.1s"><span>Manuscript in preparation · 稿件准备中（v15.57 候选稿，未投稿）</span><span class="mono">AI 辅助整理 · 非独立专家裁决</span></div>
+</section>
+
+<section class="slide" id="s2" data-steps="0" data-title="开场：结论与条件">
+  <div class="cold">
+    <div class="b blur" data-s="0" style="--d:.3s">一条结论，</div>
+    <div class="b blur" data-s="0" style="--d:1.3s">离开了它的条件，</div>
+    <div class="b blur l3" data-s="0" style="--d:2.4s">就不再是同一条结论。</div>
+  </div>
+  <div class="sub b" data-s="0" style="--d:3.6s">材料阶段、剂量基准、对照、暴露方案、实验单元……<br>这些<em>限定条件</em>，本身就是命题的一部分。</div>
+</section>
+
+<section class="slide" id="s3" data-steps="2" data-title="八类限定条件">
+  <div class="hd"><div class="kicker b" data-s="0">Qualifications · 表 3</div><h2 class="h2 b" data-s="0" style="--d:.1s">原文读得出的条件，需要被“存下来”</h2></div>
+  <div class="orbit"><svg class="lines"></svg><div class="sweep"></div>
+    <div class="core b zoom" data-s="0" style="--d:.2s"><b>结论</b><small>“A 改善了 B”</small></div>
+    <div class="cmpmsg">仅靠段落级绑定：<br>限定条件读得出来，却得不到保护（§4.1）</div>
+    <div class="restore b" data-s="2"><div>让条件，留在结论上</div><div class="small" style="margin-top:12px">一等字段 · 缺失显式记录</div></div>
+  </div>
+  <div class="panel glass b right" data-s="0" style="--d:.4s"><div class="body"></div><div class="pf">表 3 · 这些例子界定推理边界，不是模型性能标签。完整读法见 SI S16–S25、S39–S48、S70。</div></div>
+  <div class="ctl b" data-s="0" style="--d:.5s"><button class="btn v" data-a="cmp">模拟压缩</button><button class="btn" data-a="rst">恢复条件</button></div>
+</section>
+
+<section class="slide" id="s4" data-steps="1" data-title="版本固定的证据库">
+  <canvas width="1920" height="1080"></canvas>
+  <div class="hd" style="pointer-events:none"><div class="kicker b" data-s="0">Evidence store · 证据库</div></div>
+  <div class="cnt4 b" data-s="0" style="--d:.1s">
+    <div><b data-n="52">52</b><span>篇固定版本全文</span></div>
+    <div><b data-n="113">113</b><span>条报告元组</span></div>
+    <div><b data-n="356">356</b><span>个原文定位符</span></div>
+    <div><b data-n="51">51</b><span>道来源报告问题</span></div>
+  </div>
+  <div class="legend b fade" data-s="0" style="--d:.6s"><span><i style="background:var(--acc)"></i>条件字段非空 (99)</span><span><i style="background:#7C8DB5"></i>条件字段为空 (14)</span><span><i style="background:rgba(111,211,255,.5);border-radius:2px"></i>一篇 XML 版本</span></div>
+  <div class="cap b fade" data-s="0" style="--d:.8s">版本固定 · 条件感知 · 缺失显式</div>
+  <div class="hint dragh b fade" data-s="0" style="--d:1s">拖动旋转 · 悬停预览 · 点击查看记录</div>
+  <div class="tip"></div>
+  <div class="rp glass"></div>
+</section>
+
+<section class="slide" id="s5" data-steps="2" data-title="同事实设计">
+  <div class="hd"><div class="kicker b" data-s="0">Same-fact design · 同事实设计</div><h2 class="h2 b" data-s="0" style="--d:.1s">同一张事实表，两种检索实现</h2></div>
+  <div class="ctl b" data-s="0" style="--d:.3s"><button class="btn ghost" data-a="replay">重放动画</button></div>
+  <div class="policy b" data-s="0" style="--d:.2s"><span>共享</span><span>同一事实表</span><span>同一实体 ID 与来源单元</span><span>3 个 BM25 种子</span><span>两步关联深度</span><span>同一评分与平局规则</span><span>同一打包器</span></div>
+  <div class="box5 l glass b left" data-s="0" style="--d:.35s"><h4 class="acc">GRAPH<small>关联遍历</small></h4><svg class="g" viewBox="0 0 660 290"></svg></div>
+  <div class="box5 r glass b right" data-s="0" style="--d:.35s"><h4 class="vio">strong FLAT<small>关系表 · 递归查询</small></h4><div class="tbl"></div></div>
+  <div class="strip l b fade" data-s="0" style="--d:.5s"></div><div class="strip r b fade" data-s="0" style="--d:.5s"></div>
+  <div class="slab l b fade" data-s="0" style="--d:.6s">证据包 · 12 个区块</div><div class="slab r b fade" data-s="0" style="--d:.6s">证据包 · 12 个区块</div>
+  <div class="diff"></div>
+  <div class="dz b fade k1t" data-s="1">DIFF = 0 BYTES</div>
+  <div class="parity">
+    <div class="pcard glass b zoom" data-s="2" style="--d:.15s"><b>24/24</b><span>选中事实、来源单元顺序<br>与证据包字节全部一致</span></div>
+    <div class="pbadge b zoom" data-s="2"><b>实现对等</b><small>PARITY</small></div>
+    <div class="pcard glass b zoom" data-s="2" style="--d:.3s"><b>72/72</b><span>证据包离线复现</span></div>
+  </div>
+  <div class="src b fade" data-s="2" style="position:absolute;left:0;right:0;top:690px;text-align:center;--d:.5s">§3.4 · SI S53, S68 · 结论只限于已保存的策略</div>
+</section>
+
+<section class="slide" id="s6" data-steps="1" data-title="Δgraph 与 Δcuration">
+  <div class="lhs">
+    <div class="kicker b" data-s="0">Graph increment · 图增量</div>
+    <div class="dg b blur" data-s="0" style="--d:.2s"><span>Δ</span>graph = 0</div>
+    <div class="h3 b" data-s="0" style="--d:.5s">图本身的增量，被单独测了出来</div>
+    <p class="lead b" data-s="0" style="--d:.7s;margin-top:22px">同一策略下，GRAPH 与 strong FLAT 返回逐字节相同的证据包。任何“图的好处”，都只能来自关系型对照所缺少的信息或操作——如带类型或有向的边、不同的种子策略或预算。</p>
+    <div class="src b fade" data-s="0" style="--d:.9s">§3.4, §4.2 · SI S53</div>
+  </div>
+  <div class="rhs glass b right" data-s="1">
+    <div class="kicker" style="color:var(--vio)">Δcuration · 策展与选择对比</div>
+    <div class="rings">
+      <div class="ring"><svg viewBox="0 0 300 300"><circle class="bgc" cx="150" cy="150" r="120"/><circle class="fg" cx="150" cy="150" r="120" stroke="#5EF2DC" data-p="65.6"/></svg><div class="v"><b class="acc">65.6%</b><span>结构化证据包</span></div></div>
+      <div class="ring"><svg viewBox="0 0 300 300"><circle class="bgc" cx="150" cy="150" r="120"/><circle class="fg" cx="150" cy="150" r="120" stroke="#9B87FF" data-p="55.8"/></svg><div class="v"><b class="vio">55.8%</b><span>TEXT 文本检索</span></div></div>
+    </div>
+    <div class="cq">已知阳性节点覆盖率（24 题均值）<br>完整引文覆盖率：<b class="acc">64.8%</b> vs <b class="vio">55.8%</b></div>
+    <div class="caveat">24 道开发题 · 233 个已知阳性绑定。Δcuration 同时改变策展事实、单元选择与打包，参考标签与事实同源 → 仅作描述性报告，不归因于图拓扑。</div>
+    <div class="ctl"><span class="src">§3.4 · SI S71</span><button class="btn v" data-a="perq">逐题查看 →</button></div>
+  </div>
+</section>
+
+<section class="slide" id="s7" data-steps="1" data-title="五层过程验证记分卡">
+  <div class="hd"><div class="kicker b" data-s="0">Scorecard · 表 1 &amp; 表 2</div><h2 class="h2 b" data-s="0" style="--d:.1s">五层记分卡：每层只回答自己的问题</h2></div>
+  <div class="iso b fade" data-s="0" style="--d:.2s"><svg viewBox="0 0 1000 820"></svg>
+    <div class="sigma"><span>Σ</span><span>Σ</span><span>Σ</span><span>Σ</span><span>Σ</span><span>Σ</span></div>
+  </div>
+  <div class="nosum b k1d" data-s="1"><div>不合成总分</div><div class="small" style="margin-top:10px">各层各自报告分母 · 通过 ≠ 准确率</div></div>
+  <div class="lp glass b right" data-s="0" style="--d:.4s"></div>
+  <button class="btn v scf b fade" data-s="0" style="--d:.6s" data-a="scifact">外部校准 · SciFact</button>
+  <span class="hint hint7 b fade" data-s="0" style="--d:.7s">点击任一层：意味着什么 · 不能确立什么 · 实测结果</span>
+</section>
+
+<section class="slide" id="s8" data-steps="6" data-title="六项可重放核验">
+  <div class="hd"><div class="kicker b" data-s="0">Verification · 已执行的核验</div><h2 class="h2 b" data-s="0" style="--d:.1s">每一步，都可重放、可核验</h2></div>
+  <div class="grid">
+    <div class="flip b zoom" data-s="1" style="--cc:var(--acc)"><div class="in"><div class="fa glass"><b>552/553</b><span>定位符与引文重放吻合</span><small>L1 · 来源保真</small></div><div class="ba glass"><h5>分母与出处</h5><p>26 个 XML 版本中共 <b>553</b> 次定位符/引文出现，<b>552</b> 次吻合；<b>1</b> 例表格/化学式序列化例外<b>被保留并报告</b>，没有删掉。</p><div class="src">§3.7 · SI S55, S68</div></div></div></div>
+    <div class="flip b zoom" data-s="2" style="--cc:var(--sky)"><div class="in"><div class="fa glass"><b>14/14</b><span>篡改对照全部被拒绝</span><small>L1 · 来源保真</small></div><div class="ba glass"><h5>分母与出处</h5><p>12 份 XML 中的 <b>103</b> 个归档片段做字节、定位与偏移核对；<b>14</b> 个人为篡改的对照全部被控制器拒绝。</p><div class="src">SI S67</div></div></div></div>
+    <div class="flip b zoom" data-s="3" style="--cc:var(--vio)"><div class="in"><div class="fa glass"><b>1,695</b><span>个字段状态显式记录</span><small>L2 · 条件保留</small></div><div class="ba glass"><h5>分母与出处</h5><p>113 条 × 15 个字段：<b>604</b> 个 PRESENT_AI_EXTRACTED、<b>1,091</b> 个 NOT_EXTRACTED。这是<b>覆盖清单</b>，不是字段准确率。</p><div class="src">SI S61</div></div></div></div>
+    <div class="flip b zoom" data-s="4" style="--cc:var(--acc)"><div class="in"><div class="fa glass"><b>24/24</b><span>证据包逐字节一致</span><small>L3 · 实现对等</small></div><div class="ba glass"><h5>分母与出处</h5><p>24 道题中，GRAPH 与 strong FLAT 的选中事实、有序来源单元与证据包字节<b>全部一致</b>；<b>72/72</b> 个证据包离线复现。</p><div class="src">§3.4 · SI S53, S68</div></div></div></div>
+    <div class="flip b zoom" data-s="5" style="--cc:var(--pur)"><div class="in"><div class="fa glass"><b>48/48</b><span>引用 ID 全部可解析</span><small>L5 · 契约合规</small></div><div class="ba glass"><h5>分母与出处</h5><p>50 条终端回答中共 <b>48</b> 处引用，ID 全部解析到输入；其中 <b>35/48</b> 是连续的规范化子串——<b>可解析不等于逐字引用</b>。</p><div class="src">§3.6 · SI S56</div></div></div></div>
+    <div class="flip b zoom" data-s="6" style="--cc:var(--amb)"><div class="in"><div class="fa glass"><b>0.862</b><span>SciFact 外部校准 Recall@5</span><small>公开任务 · 不迁移到 HA–肽</small></div><div class="ba glass"><h5>分母与出处</h5><p>188 条证据阳性声明、5,183 篇摘要：摘要级 BM25 Recall@5 <b>0.862</b>，词重叠基线 0.664；42 胜 / 144 平 / 2 负。只校准检索管线。</p><div class="src">§3.5 · SI S34</div></div></div></div>
+  </div>
+  <div class="hint b fade" data-s="1" style="position:absolute;left:150px;bottom:80px">点击卡片翻面，查看分母与出处</div>
+</section>
+
+<section class="slide" id="s9" data-steps="5" data-title="与相关工作的关系">
+  <div class="hd"><div class="kicker b" data-s="0">Related work · 定位</div><h2 class="h2 b" data-s="0" style="--d:.1s">我们站在哪里</h2></div>
+  <div class="rt">
+    <div class="rr hd9 b fade" data-s="0" style="--d:.2s"><div>方向</div><div>代表工作</div><div>与本文的关系</div></div>
+    <div class="rr b left" data-s="1" data-k="rag"><div class="n">检索增强生成</div><div class="w">Lewis 等, NeurIPS 2020<sup>5</sup></div><div class="r">以检索到的文本为条件生成；本文在其上把<b>限定条件存成显式字段</b></div></div>
+    <div class="rr b left" data-s="2" data-k="graphrag"><div class="n">GraphRAG</div><div class="w">Edge 等, arXiv 2024<sup>6</sup></div><div class="r">图索引 + 社区摘要；本文的邻接流水线<b>不复现</b> GraphRAG</div></div>
+    <div class="rr b left" data-s="3" data-k="modular"><div class="n">模块化分析</div><div class="w">Marwitz 2026<sup>7</sup> · Zhou 2026<sup>8</sup> · Nishida 2026<sup>9</sup></div><div class="r">区分检索、知识单元大小与推理；本文<b>再分离一层</b>：遍历 vs 被遍历的策展事实</div></div>
+    <div class="rr b left" data-s="4" data-k="bench"><div class="n">公开基准</div><div class="w">SciFact<sup>10</sup> · PubMedQA<sup>11</sup> · Context24<sup>12</sup> · MuLMS-Img<sup>14</sup> · SciClaimEval 等<sup>16–21</sup></div><div class="r">均为特定任务；<b>都不提供</b>盲法 HA–肽 裁决 → SciFact 只作外部校准</div></div>
+    <div class="rr me b zoom" data-s="5"><div class="n">本文</div><div class="w" style="font-family:var(--sans)">同事实设计 + 条件感知证据库</div><div class="r">在共享策略下<b>分开报告 Δgraph 与 Δcuration</b>，并给出不合成总分的过程验证</div></div>
+  </div>
+  <div class="note9 b fade" data-s="1">定位对比，不是排行榜<span>点击任一行，查看稿件原句与完整参考文献</span></div>
+</section>
+
+<section class="slide" id="s10" data-steps="1" data-title="对比演示：锁定共享部分">
+  <div class="hd"><div class="kicker b" data-s="0">Why it matters · 拖动滑块</div><h2 class="h2 b" data-s="0" style="--d:.1s">典型比较一次改变四件事</h2></div>
+  <div class="pp pa glass b left" data-s="0" style="--d:.2s"></div>
+  <div class="pp pb glass b right" data-s="0" style="--d:.3s"></div>
+  <div class="foot10 b fade" data-s="0" style="--d:.5s"><div class="src">典型比较同时改变：检索算法、引导选择的策展事实、证据打包、生成器输入预算（§1）。同事实设计共享事实、种子、深度、评分与打包（§4.2）。</div><button class="btn" data-a="lock">🔒 锁定共享部分</button></div>
+</section>
+
+<section class="slide" id="s11" data-steps="5" data-title="意义">
+  <div class="hd"><div class="kicker b" data-s="0">Significance · 意义</div><h2 class="h2 b" data-s="0" style="--d:.1s">这项工作改变了什么</h2></div>
+  <div class="grid">
+    <div class="flip b" data-s="1" style="--cc:var(--acc)"><div class="in"><div class="fa glass"><div class="ic">1</div><h4>条件成为<br>一等字段</h4><p>限定条件读得出来，却不受段落级绑定保护；它们必须是一等字段，缺失要显式记录。</p><small>§4.1 · 点击看原句</small></div><div class="ba glass"><p>“…qualifications… can be read from the source but are not protected by passage-level binding; they must be first-class fields with explicit missingness.”</p><div class="src">§4.1</div></div></div></div>
+    <div class="flip b" data-s="2" style="--cc:var(--vio)"><div class="in"><div class="fa glass"><div class="ic">Δ</div><h4>Δgraph 与 Δcuration<br>分开报告</h4><p>在共享策略下对强非图对照报告 Δgraph，单独报告 Δcuration 及其来源重叠，不把后者归因于拓扑。</p><small>§4.2 · 点击看原句</small></div><div class="ba glass"><p>“Graph-retrieval studies of materials literature would therefore be easier to interpret if they reported Δgraph against a strong non-graph comparator under a shared policy, reported Δcuration separately with its provenance overlap, and did not attribute the latter to topology.”</p><div class="src">§4.2</div></div></div></div>
+    <div class="flip b" data-s="3" style="--cc:var(--sky)"><div class="in"><div class="fa glass"><div class="ic">✓</div><h4>没有专家金标准<br>也可审计</h4><p>条件感知证据库 + 不合成总分的过程验证记分卡，让 HA–肽 证据流程可以被逐层审计。</p><small>§5 · 点击看原句</small></div><div class="ba glass"><p>“A condition-aware evidence store and a non-aggregated process-validation scorecard make an HA–peptide evidence workflow auditable without an expert gold set.”</p><div class="src">§5</div></div></div></div>
+    <div class="flip b" data-s="4" style="--cc:var(--amb)"><div class="in"><div class="fa glass"><div class="ic">→</div><h4>下一步的门槛<br>已经写明</h4><p>合格参考标准、未触碰的研究家族划分、冻结的评分协议；汇总方法差异前，先通过 schema 与证据绑定关口。</p><small>§5 · §4.4 · 点击看原句</small></div><div class="ba glass"><p>“…requires qualified references, an untouched study-family split and a frozen scoring protocol.” “…must pass the schema and evidence-binding gate on an untouched, qualified split before any method difference is summarized.”</p><div class="src">§5 · §4.4</div></div></div></div>
+  </div>
+  <div class="punch b blur" data-s="5"><div>为今后真正的比较评估，打下可审计的地基</div></div>
+</section>
+
+<section class="slide" id="s12" data-steps="0" data-title="结语">
+  <div class="wrap">
+    <div class="kicker b" data-s="0">Summary · 结语</div>
+    <div class="t b" data-s="0" style="--d:.1s">条件感知的证据整理，有边界的 AI 诊断</div>
+    <div class="te b" data-s="0" style="--d:.2s">Condition-aware evidence curation and bounded AI diagnostics for hyaluronic acid–peptide research</div>
+    <div class="bd">
+      <div class="glass b left" data-s="0" style="--d:.4s"><h5 class="amb">边界声明</h5><p>本工作<span class="amb">不声称</span>准确率、图谱优越性或新发现。<br><span class="small">AI 转录不是人工金标准（is_gold = 0）。</span></p></div>
+      <div class="glass b right" data-s="0" style="--d:.55s"><h5 class="vio">真正的比较评估还需要</h5><ul><li>合格的参考标准</li><li>未触碰的研究家族划分</li><li>冻结的评分协议</li></ul></div>
+    </div>
+  </div>
+  <div class="thx b blur" data-s="0" style="--d:.9s">谢谢 · 欢迎提问</div>
+  <div class="foot b fade" data-s="0" style="--d:1.1s"><span>Manuscript in preparation · 稿件准备中（v15.57 候选稿，未投稿）</span><span class="mono">RSC Digital Discovery · 目标期刊</span></div>
+</section>
+
+<div id="modal"><div class="box glass"></div></div>
+</div>
+<div id="hud"><button data-h="prev" title="上一步 ←">‹</button><span class="cnt">1 / 12</span><button data-h="next" title="下一步 →">›</button><button data-h="toc" title="目录 T">目录</button><button data-h="notes" title="讲稿 N">讲稿</button><button data-h="pres" title="演讲者视图 P">演讲者视图</button><button data-h="fs" title="全屏 F">全屏</button></div>
+<div id="prog"><i></i></div>
+<div id="toc" class="ov"><h4>目录 · CONTENTS</h4><div class="grid"></div></div>
+<div id="notesbar"><h5>讲稿 · NOTES</h5><div></div></div>
+<div id="black"></div>
+<div id="vidov"><button class="x">关闭 Esc</button></div>
+
+<script>window.DECK_DATA={"recs":[{"id":"SOURCE-REFERENCE:PMC13479856:001","p":"PMC13479856","d":50,"c":true,"su":"Azide-bearing membrane coating on Cu-CeO2","re":"reported_click_reaction_with","ob":"DBCO-FTP","co":[["membrane_coating","ABs/Cu-CeO2 1:1 mass ratio; extrusion through 200 nm pores"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[1]/p[4]","cs":0,"ce":2167,"h":"254deb90de034f5d3b97d69bd16f4086fbad4045a2a97ddfc3565acef57a317e","g":false},{"id":"SOURCE-REFERENCE:PMC13479856:002","p":"PMC13479856","d":50,"c":true,"su":"HAMA microneedle tips","re":"reported_incorporated","ob":"Cu-CeO2@ABs-FTP nanoparticles","co":[["HAMA","5% w/v"],["light","405 nm, 400 mW/cm2"],["casting","300 microlitres with 100 micrograms/ml Cu-CeO2@ABs-FTP"],["backing","20% PVA"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[4]/sec[9]/p[1]","cs":0,"ce":508,"h":"b4b104528c1cd6d1c188141a55fce92f8f4e4e81eac4050903ff202350150e67","g":false},{"id":"SOURCE-REFERENCE:PMC13472118:001","p":"PMC13472118","d":49,"c":true,"su":"DBCO-modified extracellular vesicles","re":"reported_click_reaction_with","ob":"N3-Angiopep-2","co":[["EV_activation","DBCO-sulfo-NHS, room temperature 4 h"],["peptide_step","4 degrees C, 12 h"],["washing","three 100 kDa MWCO washes after each stage"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[4]/sec[5]/p[1]","cs":0,"ce":836,"h":"8e89d5bea3727e0d0cec966b0bb07419d20cd4a8b6f3bcaaf6f14f0578982d66","g":false},{"id":"SOURCE-REFERENCE:PMC13472118:002","p":"PMC13472118","d":49,"c":true,"su":"HA-PBA/PVA hydrogel","re":"reported_encapsulated","ob":"Angiopep-2-modified TEVs","co":[["network","dynamic boronate ester"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[3]/p[1]","cs":0,"ce":974,"h":"606acd0a280e08c540e957b5c23d0ba8f11d24493af0716dce3bc2d019ea9813","g":false},{"id":"SOURCE-REFERENCE:PMC13410797:001","p":"PMC13410797","d":48,"c":true,"su":"HA","re":"reported_ADH_EDC_NHS_modification_to","ob":"AHA","co":[["HA","3 g in 200 ml"],["ADH","8.8 g"],["EDC","2.86 g"],["NHS","1.71 g"],["pH","6.8"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[4]/sec[1]/p[1]","cs":0,"ce":669,"h":"bf4b4d3dfb5d04f903c83557e46ceea3ddc5edc3b5dc18aedbe25a5656f8417a","g":false},{"id":"SOURCE-REFERENCE:PMC13410797:002","p":"PMC13410797","d":48,"c":true,"su":"AHA/OSA-PBA/EGCG composite hydrogel","re":"reported_incorporated","ob":"source-named F-SAP","co":[["AHA_stock","50 mg/ml"],["F-SAP_stock","1 mg/ml"],["mixing","equal volumes, stand at 37 degrees C"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[4]/sec[4]/p[1]","cs":0,"ce":185,"h":"fd7f8aa298c14f9852752dc291107e3225c8760a8b625907ba09681474c4b8ae","g":false},{"id":"SOURCE-REFERENCE:PMC13316178:001","p":"PMC13316178","d":45,"c":false,"su":"CS/SA/HA/WYRGRL composite carrier","re":"reported_encapsulated","ob":"KRFK/BDMC/MnTBAP core","co":[],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[1]/p[4]","cs":0,"ce":2743,"h":"74ab183ff1879b7b6936551fdfee26f7d332ae639711025439087cc225dd9953","g":false},{"id":"SOURCE-REFERENCE:PMC13316178:002","p":"PMC13316178","d":45,"c":true,"su":"HA-containing HM-SCHW carrier","re":"reported_lower_coefficient_of_friction_vs","ob":"HA-deletion HM-SCW carrier","co":[["tribology_observation","1 h"]],"en":"Coefficient of friction","cp":"HM-SCW without HA","di":"lower","x":"./body[1]/sec[3]/sec[7]/p[2]","cs":0,"ce":3800,"h":"92a8de5b146d4f14c32ed7df8d320c2f7cecf5417a725a1be44c770d7743dbca","g":false},{"id":"SOURCE-REFERENCE:PMC13316178:003","p":"PMC13316178","d":45,"c":false,"su":"WYRGRL-containing composite","re":"reported_localization_without_specificity_control","ob":"joint/cartilage","co":[],"en":"Localization/retention","cp":null,"di":null,"x":"./body[1]/sec[3]/sec[7]/p[1]","cs":0,"ce":2588,"h":"e8311315f27bc801a59eb8ab11ad2b41f5d917c7271d86e990037d85df1b4669","g":false},{"id":"SOURCE-REFERENCE:PMC13336385:001","p":"PMC13336385","d":47,"c":true,"su":"ChSMA/OHA composite microspheres","re":"reported_EDC_NHS_activation_and_incubation_with","ob":"WYRGRL","co":[["dispersed_phase_ChSMA:OHA:LAP","20:4:1 w/w/w"],["light","405 nm, 2 min"],["CBZ_loading","15 mg/ml in 75% ethanol, 37 degrees C, 24 h"],["activation","300 rpm, 30 min"],["peptide_step","1 ml PBS, 37 degrees C, 2 h"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[1]/p[5]","cs":0,"ce":1267,"h":"fd2b339b3a5ebc916cddcc0aae62df1b04d78759cbe004039ea251d8af78069f","g":false},{"id":"SOURCE-REFERENCE:PMC13336385:002","p":"PMC13336385","d":47,"c":true,"su":"CBZ/WCOM microspheres","re":"reported_degradation_assay_in","ob":"PBS with collagenase II and hyaluronidase","co":[["enzymes","2 micrograms/ml each"],["temperature","37 degrees C"],["agitation","90 rpm"],["timepoints","days 2–24"]],"en":"Remaining mass/degradation","cp":null,"di":null,"x":"./body[1]/sec[5]/sec[3]/p[1]","cs":0,"ce":504,"h":"66660ea17fc85202322028ed7027b42fff616d00009bc2780c72d11d3636f313","g":false},{"id":"SOURCE-REFERENCE:PMC13259057:001","p":"PMC13259057","d":44,"c":true,"su":"LAF-xenopeptide/mRNA core polyplex","re":"reported_HA_outer_coating","ob":"HA-coated polyplex","co":[["core","N/P counts primary, secondary and tertiary amines; 40 min room temperature"],["HA_stage","20% final volume HA solution; 10 min room temperature"],["final_mRNA","12.5 micrograms/ml"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":3280,"h":"811fa299d194512b94e29c8ebcd8700b65d03903cf1e9a5b4327d6d0bad7cda8","g":false},{"id":"SOURCE-REFERENCE:PMC13259057:002","p":"PMC13259057","d":44,"c":false,"su":"HA or PEG coating","re":"reported_no_expression_enhancement_in","ob":"ALI lung-model conditions","co":[],"en":"mRNA expression under ALI conditions","cp":null,"di":null,"x":"./body[1]/sec[3]/sec[5]/p[4]","cs":0,"ce":747,"h":"3a6fd6ae823efd672a20cb4d135cd490ea3224fdd11395ca3c14b78f975d96f2","g":false},{"id":"SOURCE-REFERENCE:PMC13211109:001","p":"PMC13211109","d":42,"c":true,"su":"Zein microneedle tips","re":"reported_loaded_with","ob":"bacitracin","co":[["zein","1.250 g"],["bacitracin","500 mg"],["solvent","5 ml 80% ethanol"],["glycerol","0.125 g"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[2]/sec[2]/p[1]","cs":0,"ce":1168,"h":"a8dd85e1a869a999d66bc4f9f7b340332c2f9495db16129b792fc746e02b4447","g":false},{"id":"SOURCE-REFERENCE:PMC13211109:002","p":"PMC13211109","d":42,"c":true,"su":"HA base","re":"reported_supports","ob":"bacitracin-loaded zein microneedle tips","co":[["base","1 ml 3% HA solution"],["drying","40 degrees C, 16 h"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":746,"h":"27cb682a04d97df735891ef5ccc0cdeaa1fae9f090afb4060c37569bf800fc9f","g":false},{"id":"SOURCE-REFERENCE:PMC13334670:001","p":"PMC13334670","d":46,"c":false,"su":"HA","re":"reported_EDC_NHS_modification_with","ob":"dopamine to form HADA","co":[],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":718,"h":"90af10448a5a85e68e83e3fe6b548596a18085fde4e6e28dec9aa9ce9f009bcc","g":false},{"id":"SOURCE-REFERENCE:PMC13334670:002","p":"PMC13334670","d":46,"c":false,"su":"HADA","re":"reported_noncovalent_assembly_with","ob":"HRY peptide","co":[],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[3]/p[3]","cs":0,"ce":2284,"h":"40f97aea4a9a4e2febc91e1fec77d3a0546ad365f8a751caa418851cea53d9f2","g":false},{"id":"SOURCE-REFERENCE:PMC13248762:001","p":"PMC13248762","d":43,"c":true,"su":"HA","re":"reported_EDC_NHS_reaction_with","ob":"GPLGLPGYGFGG","co":[["HA","37.9 mg in 5 ml PBS pH 6"],["EDC","23 mg"],["NHS","13.81 mg"],["activation","25 degrees C, 2 h"],["peptide","54.55 mg, 18–24 h"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[4]/sec[1]/p[1]","cs":0,"ce":2984,"h":"d75a3826ab40f3112320b99af0bd590ea634b26cb6147e3f152f3e32f2674c87","g":false},{"id":"SOURCE-REFERENCE:PMC13248762:002","p":"PMC13248762","d":43,"c":true,"su":"CaO2@CuMOF particles","re":"reported_coated_with","ob":"HA or HA-peptide conjugate","co":[["particles:HA_or_HAP","2:1 mass ratio"],["mixing","24 h"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[4]/sec[5]/p[2]","cs":0,"ce":367,"h":"80d708cd6a3472f9c8812961561e05d77935cb321c572134b971376d32653b86","g":false},{"id":"SOURCE-REFERENCE:PMC13248762:003","p":"PMC13248762","d":43,"c":true,"su":"FITC-HAP-coated CaO2@CuMOF particles","re":"reported_MMP9_release_assay_of","ob":"fluorescent peptide reporter","co":[["reporter_sequence","GPLGLPGK(FITC)YGFGG"],["MMP9","0, 5, 10 micrograms/ml"],["temperature","37 degrees C"],["agitation","200 rpm"],["time","up to 48 h"]],"en":"Dialysate fluorescence","cp":null,"di":null,"x":"./body[1]/sec[4]/sec[6]/p[1]","cs":0,"ce":993,"h":"f80dc23ee3d438e79e4987a341df55beb40e7c646c12b111ecfce9049dd64400","g":false},{"id":"SOURCE-REFERENCE:PMC12981301:001","p":"PMC12981301","d":39,"c":true,"su":"HA-aldehyde","re":"reported_reductive_amination_with","ob":"WKYMVm","co":[["HA_aldehyde_modification","10 mol%"],["buffer","sodium acetate pH 5.5"],["quench","ethyl carbazate"],["reduction","sodium cyanoborohydride, room temperature, 24 h"],["reported_loading","approximately 5.5 Wm per HA chain"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":1028,"h":"f8f35657793a5391cc74b06ae03586a922281417b382efe1f0414d2325a041c6","g":false},{"id":"SOURCE-REFERENCE:PMC12981301:002","p":"PMC12981301","d":39,"c":true,"su":"Topical HA-Wm","re":"reported_compared_with","ob":"subcutaneous free Wm","co":[["HA_Wm","0.1 micromolar, 0.55 micromolar Wm equivalents"],["free_Wm","1 micromolar"],["volume","100 microlitres"],["model","BLM-induced mouse skin fibrosis"]],"en":"Skin fibrosis/anti-inflammatory endpoints","cp":"Free Wm via a different route","di":null,"x":"./body[1]/sec[2]/sec[3]/p[1]","cs":0,"ce":1932,"h":"d351dcd2b259c25399733704f29f44bb5213a5bee7acfc0d7f4210aaaf1f6e45","g":false},{"id":"SOURCE-REFERENCE:PMC12981301:003","p":"PMC12981301","d":39,"c":false,"su":"HA-Wm treatment","re":"reported_Fpr2_knockout_comparison","ob":"BLM mouse skin-fibrosis response","co":[],"en":"Anti-fibrotic response in Fpr2-deficient mice","cp":"Wild type mice","di":null,"x":"./body[1]/sec[3]/sec[6]/p[1]","cs":0,"ce":690,"h":"5a0027a5c3c547a1e65bd298d034365d319db3fa130309fc1ba66a162c2be09a","g":false},{"id":"SOURCE-REFERENCE:PMC13006942:001","p":"PMC13006942","d":40,"c":true,"su":"Previously BDDE-crosslinked HA","re":"reported_post_crosslinking_mixing_with","ob":"P2","co":[["HA_precursor","10% w/v in 0.3 M NaOH"],["BDDE","1.6% v/v; 40 degrees C, 4 h"],["final_mixture","HA 20 mg/ml, P2 50 mg/ml"],["sterilization","121 degrees C, 15 min"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[5]/p[1]","cs":0,"ce":1007,"h":"bd6f2a301e539859c8947a06764e5efe8a2d6b7eff308b4c635511768154c317","g":false},{"id":"SOURCE-REFERENCE:PMC13006942:002","p":"PMC13006942","d":40,"c":true,"su":"Eggshell-derived ACP scaffold","re":"reported_infused_with","ob":"HA-P2 with or without SEPs","co":[["arms","Sham; ACP; ACP+HA-P2; ACP+HA-P2+SEPs"],["SEPs","50 micrograms/ml"],["loading","vacuum infusion"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[6]/p[1]","cs":0,"ce":681,"h":"13115bd9c910a116a10391e1f33c8181e105522b97f6ab172cee1c217f065a72","g":false},{"id":"SOURCE-REFERENCE:PMC12914817:001","p":"PMC12914817","d":38,"c":true,"su":"HA-BCN precursor","re":"reported_VPM_Az2_crosslinking_to","ob":"HA gel on BC dressing","co":[["HA_BCN_stock","30 mg/ml"],["VPM_Az2_stock","20 mg/ml"],["gel","20 microlitres on hydrated 6 mm BC; 37 degrees C, 2 h"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[2]/p[1]","cs":0,"ce":1093,"h":"14bf3c9a0b2bfa6dcb2543522da8b0c671d5d3a584181c9eedc5632aea63d632","g":false},{"id":"SOURCE-REFERENCE:PMC12914817:002","p":"PMC12914817","d":38,"c":false,"su":"VPM-crosslinked HA gel with or without MSNs","re":"reported_loaded_with","ob":"source-named SOAP","co":[],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[3]/p[1]","cs":0,"ce":2651,"h":"f3b31993d9aa12f830455920e8661c3fbcadefe623777179eac06c0f0837f792","g":false},{"id":"SOURCE-REFERENCE:PMC12914817:003","p":"PMC12914817","d":38,"c":false,"su":"AMCA-labelled SOAP formulation","re":"reported_release_measurement_of","ob":"fluorescent reporter","co":[],"en":"Free versus total peptide release","cp":null,"di":null,"x":"./body[1]/sec[2]/sec[3]/p[1]","cs":0,"ce":2651,"h":"f3b31993d9aa12f830455920e8661c3fbcadefe623777179eac06c0f0837f792","g":false},{"id":"SOURCE-REFERENCE:PMC12823696:001","p":"PMC12823696","d":36,"c":true,"su":"Uncapped R9/K9/G9 peptides","re":"reported_compared_for","ob":"HA-induced clustering","co":[["HA","2.5 micrograms/ml = 1.85 nM polymer chains = 6.3 micromolar disaccharides"],["HA_size","1250–1500 kDa; source representative 1375 kDa"],["R9_observation","100–150 nm clusters around 0.1 micromolar"],["K9_observation","around 0.2 micromolar; variable polydispersity"],["peptide_controls","matched peptide-only reference"]],"en":"Cluster size/scattering","cp":null,"di":null,"x":"./body[1]/sec[2]/p[14]","cs":0,"ce":1481,"h":"138f4d66cd6e5b3df22e18712cde4cf5e36e7e74a310e43e1f24245f4703038b","g":false},{"id":"SOURCE-REFERENCE:PMC12823696:002","p":"PMC12823696","d":36,"c":true,"su":"HA/R9/K9/G9 molecular dynamics model","re":"reported_simulation_design","ob":"five HA octadecamer chains and five nonapeptides","co":[["concentration","approximately 6.2 mM"],["box","11 nm"],["force_field","prosECCo75"],["solvent","TIP3P with NaCl/counterions"],["temperature","310.15 K"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/p[15]","cs":0,"ce":775,"h":"cd0817d898c7e2d2e6d35776039c9c957f7524a7ff9d15f7447b0d4175d3df55","g":false},{"id":"SOURCE-REFERENCE:PMC12823696:003","p":"PMC12823696","d":36,"c":true,"su":"Intermolecular NOE experiment","re":"reported_no_detected_intermolecular_NOE","ob":"HA-peptide system","co":[["HA","8–15 kDa"],["concentration","approximately 20 mM"]],"en":"NMR cross-peaks","cp":null,"di":null,"x":"./body[1]/sec[2]/p[2]","cs":0,"ce":1034,"h":"412be1dcfcef9b524811da17767b64aa1235934ef9c1e888efa5d08476cfeccf","g":false},{"id":"SOURCE-REFERENCE:PMC12845103:001","p":"PMC12845103","d":37,"c":true,"su":"HA","re":"reported_EDC_Sulfo_NHS_reaction_with","ob":"aminated GO","co":[["HA_solution_as_reported","320 ng/ml"],["a_GO","0.5 mg in 0.5 ml"],["activation","30 min"],["reaction","room temperature 24 h"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":806,"h":"338ec91b806f399b93429ae36621231cb5ab9b88503b94e393752de878871f77","g":false},{"id":"SOURCE-REFERENCE:PMC12845103:002","p":"PMC12845103","d":37,"c":true,"su":"Fmoc-Phe/diphenylalanine suspension","re":"reported_enzymatic_gelation_with","ob":"a-GO or a-GO-HA dispersions","co":[["Fmoc_Phe","40 micromoles"],["diphenylalanine","40 micromoles"],["lipase","100 microlitres of 50 mg/ml Pseudomonas fluorescens lipase"],["temperature","37 degrees C"],["time","30 min"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[4]/p[1]","cs":0,"ce":761,"h":"f5a417f311ab59de36c9698c01e948c95c5021f786c20c72763852d8b6cfc66d","g":false},{"id":"SOURCE-REFERENCE:PMC12845103:003","p":"PMC12845103","d":37,"c":true,"su":"a-GO","re":"reported_HPLC_inferred_HA_loading","ob":"approximately 20%","co":[["a_GO","0.50 mg/ml"],["absorbed_HA_as_reported","0.10 mg/ml"]],"en":"Residual-supernatant HPLC-derived attachment estimate","cp":null,"di":null,"x":"./body[1]/sec[3]/sec[2]/p[1]","cs":0,"ce":694,"h":"b8f24885fca4e75689e75ec1c7aa8e0759ca80314691d1d9b310772488e42fda","g":false},{"id":"SOURCE-REFERENCE:PMC13015776:001","p":"PMC13015776","d":41,"c":true,"su":"FmocFF","re":"reported_solvent_switch_self_assembly_with","ob":"HA inside titanium implants","co":[["FmocFF_stock","100 mg/ml DMSO"],["nominal_final_FmocFF","0.5% w/v"],["nominal_final_HA","0.167% w/v"],["incubation","4 degrees C, at least 4 h"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[4]/sec[1]/p[1]","cs":0,"ce":727,"h":"23d74c00dec7f7a245c4e4da00bd803bedf727bd4bc596b8585ee800a30ae672","g":false},{"id":"SOURCE-REFERENCE:PMC13015776:002","p":"PMC13015776","d":41,"c":true,"su":"FmocFF/HA implant scaffold","re":"reported_hyaluronidase_degradation_assay_vs","ob":"HA-only implant","co":[["enzyme","200 U/ml"],["temperature","37 degrees C"],["readout","fluorescein-HA supernatant, 485/535 nm"]],"en":"Fluorescent HA degradation/release","cp":"Pure HA implant","di":null,"x":"./body[1]/sec[4]/sec[7]/p[1]","cs":0,"ce":1121,"h":"3c21439195b23629c2d340427fe84788f51e42a05bbe5f6b21d46fb2adcf5103","g":false},{"id":"SOURCE-REFERENCE:PMC13015776:003","p":"PMC13015776","d":41,"c":true,"su":"Rabbit calvarial defects","re":"reported_assigned_to","ob":"inert/lyophilized/hydrogel-integrated implants","co":[["animals","nine female New Zealand White rabbits"],["defects","three 8 mm defects per rabbit; 27 created"],["analysed_implants_as_reported","inert 7, lyophilized 8, hydrogel 7"],["unfilled_defects_as_reported","four"]],"en":"Bone regeneration at eight weeks","cp":null,"di":null,"x":"./body[1]/sec[2]/sec[4]/sec[1]/p[1]","cs":0,"ce":696,"h":"8ade17ab6c3452866fc08a2adc37d9f00af4396009e4f42d5d20649d8c42ad78","g":false},{"id":"SOURCE-REFERENCE:PMC12690571:001","p":"PMC12690571","d":35,"c":true,"su":"HA","re":"reported_mechanochemical_reaction_with","ob":"A9","co":[["HA","10 mg"],["activation","DIC/SiliaBond DMAP; 80 degrees C, 2 min microwave"],["A9","5 mg; manually ground with activated HA"],["dialysis","24 h, MWCO 6–8 kDa"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[1]/p[2]","cs":0,"ce":879,"h":"f83df15b705601adfb9c63a367e9583c8f07b0b0d8d6409e2f3837c004f51db1","g":false},{"id":"SOURCE-REFERENCE:PMC12690571:002","p":"PMC12690571","d":35,"c":true,"su":"HA-A9 multimer","re":"reported_fitted_affinity_for","ob":"HER2-DIVMP synthetic receptor model","co":[["buffer","10 mM phosphate, pH 7.2"],["receptor","0.05–0.15 micromolar"],["readout","fluorescence at 354 nm"],["reported_Kd","6.01 ± 1.5 nM"],["monomer_Kd","10.3 ± 3.6 nM"]],"en":"Fluorescence-derived fitted Kd","cp":"A9 monomer","di":"lower fitted Kd","x":"./body[1]/sec[2]/sec[2]/sec[5]/p[2]","cs":0,"ce":311,"h":"441c5bcfff87daed8b409802ba87d95baf1069210ff8d5c326957518a3388848","g":false},{"id":"SOURCE-REFERENCE:PMC12562490:001","p":"PMC12562490","d":30,"c":true,"su":"HA-FmocFF hydrogel","re":"reported_physical_mixture_for","ob":"intraocular glaucoma model","co":[["A","3.75 mg FmocFF + 1.25 mg HA per ml; 3:1 peptide/HA"],["B","1.25 mg FmocFF + 3.75 mg HA per ml; 1:3 peptide/HA"],["volume","3 microlitres"],["routes","intracameral or intravitreal"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[4]/sec[2]/p[1]","cs":0,"ce":782,"h":"c597fbe13dec55fb3828f2dc680e4a03b7a8f11e2a2c6ac88ee358443da01e00","g":false},{"id":"SOURCE-REFERENCE:PMC12562490:002","p":"PMC12562490","d":30,"c":true,"su":"Mixture A","re":"reported_RGC_density_reduction_vs","ob":"control eyes","co":[["reported_RGC_count","22.0 ± 4.0 per 300 micrometres"],["reported_p","less than 0.001"]],"en":"RGC density","cp":"Control eyes","di":"decreased","x":"./body[1]/sec[2]/sec[2]/p[1]","cs":0,"ce":361,"h":"8c828ac0e1bbeff756b7570b79d973457f183198bed887a8fa0a0549e5368605","g":false},{"id":"SOURCE-REFERENCE:PMC12562490:003","p":"PMC12562490","d":30,"c":true,"su":"Mixture B","re":"reported_IOP_increase_vs","ob":"baseline","co":[["time","days 7 and 21"]],"en":"IOP","cp":"Own baseline","di":"increased","x":"./body[1]/sec[2]/sec[1]/table-wrap[1]/caption[1]/p[1]","cs":0,"ce":608,"h":"4f4bd62fc1335a75d840da5fb9882feaf593a1af748e0b10f46b549c442ee5f5","g":false},{"id":"SOURCE-REFERENCE:PMC12526343:001","p":"PMC12526343","d":29,"c":true,"su":"Aminated synomag-D IONP","re":"reported_Sulfo_SMCC_attachment_of","ob":"HASP","co":[["activation","60 min room temperature"],["HASP_reaction","3 h room temperature"],["remaining_maleimide_quench","L-cysteine"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":1254,"h":"3236746b66f736f0477453562c32552d88bd5f9cc3cfee2ae461adeb7141775a","g":false},{"id":"SOURCE-REFERENCE:PMC12526343:002","p":"PMC12526343","d":29,"c":true,"su":"HASP-modified IONP","re":"reported_QCM_adsorption_to","ob":"HA-cys-coated sensor","co":[["GAG_coating","1 mg/ml PBS, 12 min"],["particles","0.0333 mg Fe/ml, 100 min"],["flow","5 ml/h"],["wash","PBS 25 min"],["overtone","third"]],"en":"Frequency/dissipation change","cp":"CS-cys-coated sensor","di":"greater HA-associated particle adsorption","x":"./body[1]/sec[2]/sec[10]/p[1]","cs":0,"ce":2483,"h":"0fc8a309f743720808846f0e520bb4c43b86f2d14c68a324264aeeec2dc6a8be","g":false},{"id":"SOURCE-REFERENCE:PMC12640218:001","p":"PMC12640218","d":32,"c":true,"su":"Crosslinked HA formulation","re":"reported_blended_with","ob":"P2 or P6","co":[["peptides","50 micrograms/ml each in separate formulations"],["matrix","BDDE-crosslinked HA plus 10% sodium hyaluronate as source wording"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":173,"h":"84a09c57d709286d460992fa0cfb4323fdae11afa7eee1fbab3f9395d02e0557","g":false},{"id":"SOURCE-REFERENCE:PMC12640218:002","p":"PMC12640218","d":32,"c":true,"su":"HA+P2/HA+P6/HA/EMD/sham study","re":"reported_six_day_gingival_detachment_experiment","ob":"porcine early healing","co":[["animals_as_reported","seven total; six primary animals plus seventh HA/EMD allocations"],["analysed_histology_n","6 defects sham/P2/P6, 3 defects HA/EMD"]],"en":"Acute soft-tissue histology/immunological response","cp":null,"di":null,"x":"./body[1]/sec[2]/sec[2]/p[1]","cs":0,"ce":836,"h":"1270f972908e0504f807542ffc5ffbea7e93145e40d3f70a058b9daf238d24cb","g":false},{"id":"SOURCE-REFERENCE:PMC12640218:003","p":"PMC12640218","d":32,"c":true,"su":"HA_P2 versus HA actin Q6QAQ1","re":"reported_proteomics_table_entry","ob":"logFC 7.60","co":[["raw_p","0.001"],["adjusted_p","0.14"],["table_label","Upregulated"]],"en":"Protein abundance estimate","cp":"HA","di":"source-labelled upregulated","x":"./body[1]/sec[2]/sec[7]/p[1]","cs":0,"ce":1907,"h":"4c7dbbe0c54d168cd827b3b391273b1c16078bfa6cdc690c5d13d1f35f6df4fa","g":false},{"id":"SOURCE-REFERENCE:PMC12667452:001","p":"PMC12667452","d":33,"c":true,"su":"HA","re":"reported_EDC_NHS_dopamine_modification_to","ob":"HADA","co":[["temperature","35 degrees C"],["pH","5.0–5.5"],["time","24 h"],["HA:DA_ratios_as_reported","2:0.5, 2:1, 2:1.75"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[5]/sec[1]/p[1]","cs":0,"ce":452,"h":"a94a9c5802081f4864945f876e5cbe5664bf68ef5cb17a647e101e7c59271c49","g":false},{"id":"SOURCE-REFERENCE:PMC12667452:002","p":"PMC12667452","d":33,"c":true,"su":"HADA variants","re":"reported_combined_with","ob":"HRR","co":[["HRR_solution","0.1% w/v"],["total_composite","2% w/v"],["pH","7.0"],["HADA_average_MW_as_reported","168 kDa"],["Results_Low_Medium_High","14.5/20.6/29.1% grafting; 50/100/400 Pa"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[1]/p[4]","cs":0,"ce":610,"h":"a8a4c9dcfa3e4c51092fa0889222fcf86fb68be2af1268e93d447c9d6410491e","g":false},{"id":"SOURCE-REFERENCE:PMC12579602:001","p":"PMC12579602","d":31,"c":true,"su":"HA-Nor-ADH","re":"reported_photoinitiated_thiol_ene_attachment_of","ob":"RGD-Cys peptide","co":[["peptide_input","2500 nmol in 500 microlitres"],["Irgacure_2959","0.05% w/v"],["UV","365 nm, 1 min"],["source_target","2.5 mM RGD per 25 microlitres HA-Nor-ADH-RGD"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":695,"h":"d50b8dba91264820f067103fa606e091a2351a758f369119643a82b35cf078b6","g":false},{"id":"SOURCE-REFERENCE:PMC12579602:002","p":"PMC12579602","d":31,"c":true,"su":"HA-Nor-ADH with or without RGD plus HA-Ox","re":"reported_hydrazone_hydrogel_coating_of","ob":"MEW PCL fibers","co":[["volumes","25 microlitres each polymer"],["gelation","30 min"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[8]/p[1]","cs":0,"ce":359,"h":"dc82db6a0b337b3815b1711145407d589ea4deda6eee4ef9a72aa3cde949fa60","g":false},{"id":"SOURCE-REFERENCE:PMC12579602:003","p":"PMC12579602","d":31,"c":true,"su":"HA-RGD coating","re":"reported_increased_C2C12_cell_attachment_vs","ob":"HA-only and non-coated scaffolds","co":[["fiber_diameters","10, 20, 30 micrometres"],["source_n","6"],["test","two-way ANOVA with Tukey comparisons as indicated"]],"en":"Nuclei count","cp":"HA-only and non-coated fibers","di":"increased","x":"./body[1]/sec[3]/sec[3]/p[2]","cs":0,"ce":1018,"h":"357fcb3ea364d8a97b948038b581ce680d2ae16611eed7c4185402ad00626fab","g":false},{"id":"SOURCE-REFERENCE:PMC12389415:001","p":"PMC12389415","d":27,"c":true,"su":"Chitosan/hyaluronate nanoparticles","re":"reported_microfluidic_encapsulation_of","ob":"killer peptide","co":[["Hyal_stock","70 micrograms/ml"],["Chitosan_stock","410 micrograms/ml in 0.5% acetic acid"],["KP_stock","3.5 mg/ml in chitosan solution"],["flow","280 microlitres/min; Chito/Hyal 1:6"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":650,"h":"6fe17aa9e6831a1d6090ffc1571d39d10f3b2dedd2e422b8f5a44eaf12ba25fd","g":false},{"id":"SOURCE-REFERENCE:PMC12389415:002","p":"PMC12389415","d":27,"c":false,"su":"KP-NPs and blank NPs","re":"reported_antiparasitic_activity_in","ob":"extracellular and intracellular T. gondii models","co":[],"en":"Parasite viability","cp":"Free KP, blank NPs and HA solution","di":null,"x":"./body[1]/sec[3]/sec[4]/sec[1]/p[1]","cs":0,"ce":675,"h":"b971ed8d21da3915ded18da9a93c4d194bbc5ee849dfbd5d0cbac9c502a866ad","g":false},{"id":"SOURCE-REFERENCE:PMC12499493:001","p":"PMC12499493","d":28,"c":true,"su":"HA","re":"reported_EDC_reaction_with","ob":"source-named WYR peptide","co":[["HA_EDC_WYR_as_reported","2.5 mM each"],["buffer","10 mM PBS pH 5.5"],["activation","15 min"],["peptide_step","room temperature 2 h"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":1446,"h":"3afbd4a03ef9d630f16fad861f23221d53fa8751328a6d013532cb6391bda3ce","g":false},{"id":"SOURCE-REFERENCE:PMC12499493:002","p":"PMC12499493","d":28,"c":true,"su":"WYR-HAMA/DPPC liposome formulation","re":"reported_microfluidic_photopolymerization_to","ob":"lubricating microspheres","co":[["WYR_HA_methacrylation","pH 8, ice bath, 24 h"],["pregel_as_reported","2 wt% HAMA, 1 wt% DPPC liposome, 0.2 wt% photoinitiator"],["UV","10 min"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[4]/sec[2]/p[1]","cs":0,"ce":493,"h":"87f3558d82d0c82f35914e188eb825546d581435a1fb6ba37c623a1935249b78","g":false},{"id":"SOURCE-REFERENCE:PMC12245508:001","p":"PMC12245508","d":25,"c":true,"su":"MeHA","re":"reported_incubation_and_dialysis_with","ob":"RGD construct","co":[["MeHA","2% w/v in triethanolamine buffer"],["peptide","1 mM, overnight 37 degrees C"],["dialysis","PBS, MWCO 20K"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[3]","cs":0,"ce":906,"h":"b44b50b9a184bd7179daece414da22cc057940eb1879ef32742081b639739432","g":false},{"id":"SOURCE-REFERENCE:PMC12245508:002","p":"PMC12245508","d":25,"c":true,"su":"MeHA-RGD","re":"reported_separate_photocrosslinking_for","ob":"cell sealant in hybrid scaffold","co":[["LAP","0.02%"],["light","405 nm"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[3]","cs":0,"ce":906,"h":"b44b50b9a184bd7179daece414da22cc057940eb1879ef32742081b639739432","g":false},{"id":"SOURCE-REFERENCE:PMC12224921:001","p":"PMC12224921","d":24,"c":true,"su":"Endogenous brain hyaluronan depletion","re":"reported_reduced","ob":"FITC-N1 neuronal uptake","co":[["hyaluronidase","4 microlitres, 20 mg/ml, ventricular injection"],["interval","two days"],["FITC_N1","300 nl, 0.1 mM, cortical injection"],["readout","30 min later"]],"en":"Neuronal uptake/localization","cp":"HA-preserved condition and scrambled N1 controls","di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":1820,"h":"f80fe1aa206b7597fbef0969ea225a8ffece98d382d037fd4d5901b15d2f8efe","g":false},{"id":"SOURCE-REFERENCE:PMC12175121:001","p":"PMC12175121","d":23,"c":true,"su":"HA hydrogel","re":"reported_physical_mixing_with","ob":"NL009 or NL010 CMP","co":[["HA","2% w/v"],["CMP","0.1% w/v"],["gel_preparation","overnight gentle stirring; then CMP added"],["scaffold","minus 80 degrees C overnight, lyophilize 12 h"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":1338,"h":"cd1f54ef5178bd2ebb856b1b3f45530f22fd54dd5ce7751236e20365f3a1fe5b","g":false},{"id":"SOURCE-REFERENCE:PMC12175121:002","p":"PMC12175121","d":23,"c":true,"su":"NL010-HAgel","re":"reported_paired_wound_assessment_vs","ob":"HA gel control","co":[["model","male Sprague-Dawley rats; two wounds per animal"],["wound","6 mm diameter, 3 mm depth"],["time","days 3, 7, 14"],["source_treatment_label","0.1% w/v, 0.1–0.2 ml"]],"en":"Wound closure/histology","cp":"Contralateral HA-gel wound; other arms include PuraMatrix/gauze","di":null,"x":"./body[1]/sec[2]/sec[8]/p[1]","cs":0,"ce":599,"h":"5b4ce8e63491616e72821e5158e8847268ab274d7ca01dbe618108f95a1a91de","g":false},{"id":"SOURCE-REFERENCE:PMC11760816:001","p":"PMC11760816","d":21,"c":true,"su":"HAMA/Alg outer scaffold","re":"reported_filled_with","ob":"ODex/QCS containing GOX/AMP/VEGF","co":[["HAMA","1 g"],["Alg","0.1 g"],["volume","10 ml"],["inner_ODex","4%"],["inner_QCS","2%"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[4]/p[3]","cs":0,"ce":862,"h":"03c078e28530a8d4eb7c3f43e19d3135f167fbcc826c40d51b075938296a089c","g":false},{"id":"SOURCE-REFERENCE:PMC11760816:002","p":"PMC11760816","d":21,"c":true,"su":"FITC-BSA and Rhodamine B-labelled AMP","re":"reported_release_assay_in","ob":"particle system","co":[["PBS_pH","5.5 and 7.4"],["temperature","37 degrees C"],["agitation","100 rpm"]],"en":"Labelled reporter release","cp":null,"di":null,"x":"./body[1]/sec[4]/p[9]","cs":0,"ce":617,"h":"d649f9a74242fc57f1661a7f545562cd73e280d92a49aa2454fae629789ea1d4","g":false},{"id":"SOURCE-REFERENCE:PMC12669493:001","p":"PMC12669493","d":34,"c":true,"su":"BDDE-crosslinked HA formulation","re":"reported_added_P2_for","ob":"HA/HA+P2/HA+P2+MSC mouse comparison","co":[["precursor_HA","10% w/v"],["final_HA","22 mg/ml"],["animals","60 mice; 20 per arm"],["injected_volume_as_reported","50–100 microlitres (~3.2 microlitres/kg)"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/sec[2]/p[1]","cs":0,"ce":938,"h":"7f7522df7837d584a493503639afd72399df86b5c63fed3e94a4b6513313ef03","g":false},{"id":"SOURCE-REFERENCE:PMC12669493:002","p":"PMC12669493","d":34,"c":true,"su":"P2 in HA","re":"reported_BCA_release_measurement","ob":"12/24-hour incubation","co":[["release_input_as_reported","500 micrograms/ml instead of 50"],["media_wording","PBS pH 7.4 and distilled water"],["calibration","albumin standards"]],"en":"BCA-derived release estimate","cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/sec[3]/p[2]","cs":0,"ce":1076,"h":"2edbdea7445a4650f3f6227a94ba4b341356cd58e0c6e902699c44b15d8ee1b7","g":false},{"id":"SOURCE-REFERENCE:PMC11477338:001","p":"PMC11477338","d":19,"c":true,"su":"Aminated SF/MAHA scaffold","re":"reported_Sulfo_SMCC_coupling_of","ob":"E7-C construct","co":[["amination","10 wt% 1,6-hexanediamine; 37 degrees C, 1 h"],["Sulfo_SMCC","2 mg/ml; 37 degrees C, 1 h"],["peptide","overnight 4 degrees C"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/sec[2]/p[1]","cs":0,"ce":683,"h":"940034bd4c0e2f7761329b3185bae010fef0c91be2110c43d991bafea1211fe8","g":false},{"id":"SOURCE-REFERENCE:PMC11477338:002","p":"PMC11477338","d":19,"c":true,"su":"FITC-labelled E7 scaffold","re":"reported_digestion_fluorescence_loading_assay","ob":"peptide-associated reporter","co":[["proteinase_K","0.4 U/ml"],["duration","3 days"],["excitation_emission","490/525 nm"],["source_n","5"]],"en":"Fluorescence-derived loading","cp":null,"di":null,"x":"./body[1]/sec[4]/sec[4]/sec[3]/p[1]","cs":0,"ce":772,"h":"a25208ccbbb33d4490c78a92f8c8d98ae86e2e6e77fa39ccd0dcbbc68e4a138d","g":false},{"id":"SOURCE-REFERENCE:PMC11578330:001","p":"PMC11578330","d":20,"c":false,"su":"PolyMet and P3-HA","re":"reported_electrostatic_layer_by_layer_assembly_on","ob":"BP","co":[],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[2]/p[1]","cs":0,"ce":2541,"h":"a3c49cabd334e9127a9d3f21d3f34e64d493820677c9ecc8e92c91f524bd0e02","g":false},{"id":"SOURCE-REFERENCE:PMC11578330:002","p":"PMC11578330","d":20,"c":true,"su":"PolyMet release","re":"reported_condition_dependent_values","ob":"PBS versus MMP-2","co":[["PBS","18.67 ± 0.88% at 24 h"],["MMP2","70.67 ± 2.91% at 6 h"],["rhMMP2","10 nM"]],"en":"PolyMet release","cp":null,"di":null,"x":"./body[1]/sec[2]/sec[2]/fig[1]/caption[1]/p[1]","cs":0,"ce":847,"h":"9745fa72eef9830f53ca5a74f69fdfa4b54ae010f190f2155b68a0cd40403331","g":false},{"id":"SOURCE-REFERENCE:PMC11432402:001","p":"PMC11432402","d":18,"c":true,"su":"MeHA precursor","re":"reported_PR1P_cophotocuring","ob":"MeHA-PR1P hydrogel","co":[["MeHA","0.5–2%"],["PR1P","0.2 mg/ml"],["LAP","0.25% w/v"],["light","405 nm, 25 mW/cm2"],["selected_recipe","0.5% MeHA, 30 s"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":1389,"h":"b3c70328caf47a5f58b512f1151d22daa18807519832f815a97a242b309724a1","g":false},{"id":"SOURCE-REFERENCE:PMC11432402:002","p":"PMC11432402","d":18,"c":false,"su":"MeHA-PR1P","re":"reported_physical_property_comparison_with","ob":"MeHA","co":[],"en":"Pore size and swelling","cp":"MeHA","di":"Nonsignificant pore-size difference; no reported swelling c…","x":"./body[1]/sec[2]/sec[1]/p[2]","cs":0,"ce":1183,"h":"ac3c52ad2cd019089a5889e8baa69cb82ee6af2eb078f2ee8fbb3e2b1b5ce6a5","g":false},{"id":"SOURCE-REFERENCE:PMC11360396:001","p":"PMC11360396","d":15,"c":true,"su":"Biotin-HA coated nanoemulsion","re":"reported_streptavidin_affinity_bridge_to","ob":"biotin-PEG-CRT","co":[["streptavidin","3.2 micromolar"],["CRT","6.4 micromolar"],["final_oil","2.78 wt%"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[2]/p[1]","cs":0,"ce":478,"h":"6f2b1d1b242326233a38b1a31875b7e8d94ee4fb2ca27472d2f1c92f12fc8a19","g":false},{"id":"SOURCE-REFERENCE:PMC11360396:002","p":"PMC11360396","d":15,"c":true,"su":"CRT nanoemulsion","re":"reported_bEnd3_uptake_readout_vs","ob":"PEG nanoemulsion","co":[["fluorescent_readout","rhodaminated streptavidin, 4 h"],["replicates","three experiments; five images per experiment"]],"en":"Cellular uptake fluorescence","cp":"PEG-NE","di":"approximately 40% higher source-reported fluorescence","x":"./body[1]/sec[3]/sec[3]/p[2]","cs":0,"ce":518,"h":"368a1276e98906977341e28b8796fd62fa9d0fc93d92fbabeffcf93ba1ee818d","g":false},{"id":"SOURCE-REFERENCE:PMC11360326:001","p":"PMC11360326","d":14,"c":true,"su":"Beta-glucan and HA","re":"reported_mixed_self_assembly_with","ob":"BP7","co":[["beta_glucan","250 micrograms/ml"],["HA","500 micrograms/ml"],["mixing","4 h"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":187,"h":"843a38979bd8f45a3a10eda56b3179ebeee16a47fdf7985f782990647c9f200a","g":false},{"id":"SOURCE-REFERENCE:PMC11360326:002","p":"PMC11360326","d":14,"c":true,"su":"Composite nanoparticles with vaccine","re":"reported_five_arm_chicken_comparison","ob":"immune endpoints","co":[["animals","50 birds; five arms"],["CNP","50/100/200 micrograms per bird"],["other_arms","vaccine only and PBS"]],"en":"Source-reported immune readouts","cp":null,"di":null,"x":"./body[1]/sec[2]/sec[7]/sec[1]/p[1]","cs":0,"ce":343,"h":"027bcefa3e2767388f7ea56ec3a4e5d319517979ccc7c4c215804a6602fd0067","g":false},{"id":"SOURCE-REFERENCE:PMC11423171:001","p":"PMC11423171","d":17,"c":true,"su":"HA-beta-CD","re":"reported_ITC_association_with","ob":"Ad-IGF-1C","co":[["PBS","host 20 micromolar; guest 200 micromolar"],["reported_Ka","14.3 × 10^6 M^-1"]],"en":"Host-guest ITC fit","cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":2785,"h":"65a15f6ffb4ee01237c9055d8d92d8281b725db663c62ea5339e534d7a012d68","g":false},{"id":"SOURCE-REFERENCE:PMC11423171:002","p":"PMC11423171","d":17,"c":true,"su":"HA-(beta-CD-Ad)-Cy5.5","re":"reported_colorectal_reporter_retention","ob":"intrarectal mouse assay","co":[["times","0.25, 1, 2, 6, 12 h"],["Results_control","HA/Cy5.5"],["Methods_control","CD/Cy5.5"]],"en":"Fluorescent reporter retention","cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":2785,"h":"65a15f6ffb4ee01237c9055d8d92d8281b725db663c62ea5339e534d7a012d68","g":false},{"id":"SOURCE-REFERENCE:PMC12344625:001","p":"PMC12344625","d":26,"c":true,"su":"Maleimide-starPEG","re":"reported_Michael_addition_of","ob":"CWGG-(KA)7 peptide","co":[["starPEG","four-arm 10 kDa"],["reaction","PBS pH 7.4; total 80 mg/ml; 2 h"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":1959,"h":"e4f5ca4f16b6caaf57ebdf6c892a42e0dad28b4a5a71ca59f6002ecdbb1385a1","g":false},{"id":"SOURCE-REFERENCE:PMC12344625:002","p":"PMC12344625","d":26,"c":true,"su":"Peptide-starPEG and S-HA-FeCp2","re":"reported_noncovalent_hydrogel_assembly_for","ob":"drug delivery","co":[["precursors_as_reported","2 mM"],["release","PBS + 0.5% Tween 80, with/without 0.2% hydrogen peroxide; 37 degrees C"]],"en":"HPLC drug release in dialysis assay","cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":1959,"h":"e4f5ca4f16b6caaf57ebdf6c892a42e0dad28b4a5a71ca59f6002ecdbb1385a1","g":false},{"id":"SOURCE-REFERENCE:PMC11404675:001","p":"PMC11404675","d":16,"c":true,"su":"P15-1 and HA mixture","re":"reported_no_increase_in_ordered_secondary_structure","ob":"CD assay","co":[["peptide","0.2 mg/ml"],["HA","0.5 mg/ml"],["temperature","25 degrees C"],["main_figure_HA","50 kDa"],["additional_MW_author_report","500/1500 kDa in unread SI"]],"en":"Circular dichroism","cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":422,"h":"7e86e32956824d7adb08fa19e15376020cd0f4aac781453e92043075c085d8b3","g":false},{"id":"SOURCE-REFERENCE:PMC11404675:002","p":"PMC11404675","d":16,"c":true,"su":"Peptide sequences","re":"reported_AlphaFold2_modeling_with","ob":"ColabFold 1.5.5","co":[["template_mode","none"],["num_seeds","1"],["model_selection","pLDDT >70"]],"en":"Predicted conformations","cp":null,"di":null,"x":"./body[1]/sec[2]/sec[3]/p[1]","cs":0,"ce":1656,"h":"4dca6883c29ec090ea2c89dddea6c340751725327b6abb0a6fb4b643623bea50","g":false},{"id":"SOURCE-REFERENCE:PMC11199391:001","p":"PMC11199391","d":13,"c":true,"su":"HA/azide-HA","re":"reported_oxime_or_click_conjugation_of","ob":"modified p79 and 2.5HIP","co":[["approximate_loading","10 peptides per SAgA"],["hSAgA","aminooxy peptide/HA oxime chemistry"],["cSAgA","alkyne peptide/azide-HA click chemistry"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[2]/p[1]","cs":0,"ce":577,"h":"e811ac854f11bea233023798808cbde96e5e911c13231f7a05f5b7451a21c27e","g":false},{"id":"SOURCE-REFERENCE:PMC11199391:002","p":"PMC11199391","d":13,"c":true,"su":"SAgA versus corresponding free modified peptides","re":"reported_NOD_mouse_diabetes_anaphylaxis_comparison","ob":"weekly injection with tapering","co":[["example_equivalence_as_reported","2.5 nmol SAgA ~25 nmol peptide"],["taper","2.5 to 0.5 nmol SAgA; peptide 25 to 5 nmol"],["Figure1D_n","13 per arm"]],"en":"Diabetes and anaphylaxis incidence","cp":"Corresponding modified free peptides and saline","di":null,"x":"./body[1]/sec[2]/sec[3]/p[1]","cs":0,"ce":425,"h":"64cd717cb3e25877e2c4dda171cfeae47341b61cc13b7381ef2fdefc83fd2bf3","g":false},{"id":"SOURCE-REFERENCE:PMC11084566:001","p":"PMC11084566","d":12,"c":true,"su":"HA carboxyl activation","re":"reported_EDC_NHS_reaction_with","ob":"RGDS","co":[["pH","6.5 MES"],["EDC:NHS","1:2"],["HA:EDC","1:25 source molar convention"],["reaction","overnight 4 degrees C"],["hydrogel","5% w/v"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[4]/sec[1]/p[1]","cs":0,"ce":2583,"h":"e6e9264b302d6e848ac267b4bd733ea710f3439933202f36ee6ddd0b81d5c910","g":false},{"id":"SOURCE-REFERENCE:PMC11084566:002","p":"PMC11084566","d":12,"c":true,"su":"RGDS-HA with/without MMP-2","re":"reported_microBCA_dialysate_assay","ob":"putative release","co":[["MMP2","4.57 ng/ml"],["MWCO","3.5–5 kDa"],["PBS","37 degrees C"],["sampling","24 h intervals for 3 days"],["literal_subtraction","amount with enzyme subtracted from control"]],"en":"microBCA dialysate signal","cp":"Without MMP-2","di":null,"x":"./body[1]/sec[4]/sec[7]/sec[3]/p[1]","cs":0,"ce":587,"h":"012418d55f5d12bd580e67ebdf03f5ea8bb66d856a56fc94aac2db3ef0139284","g":false},{"id":"SOURCE-REFERENCE:PMC11017640:001","p":"PMC11017640","d":11,"c":true,"su":"CH6K(Fmoc) precursor","re":"reported_sequential_modification_to","ob":"Mal-H6-PFC-ICG","co":[["precursor_MW","1293 Da"],["operations","PFC-Mal reaction; ICG activation/amidation; Fmoc removal; Mal-COOH reaction"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[4]/sec[1]/p[1]","cs":0,"ce":975,"h":"a0bfc80edb4c5af7f462840c7fca261bdfb51976c9fdf0435fd156450e59f01b","g":false},{"id":"SOURCE-REFERENCE:PMC11017640:002","p":"PMC11017640","d":11,"c":true,"su":"Source HA/HA-SH and Mal-H6-PFC-ICG","re":"reported_reaction_and_GA_loading_to","ob":"HHPI@GA","co":[["HA_as_reported","150 mg, 0.015 mmol; 24 h"],["GA_loading","0.5 mg GA/10 mg HHPI"],["release","PBS +0.1% Tween 80, pH 7.4/5.0, 37 degrees C; 808 nm irradiation at 3/9 h"]],"en":"UV-visible GA release","cp":null,"di":null,"x":"./body[1]/sec[4]/sec[1]/p[1]","cs":0,"ce":975,"h":"a0bfc80edb4c5af7f462840c7fca261bdfb51976c9fdf0435fd156450e59f01b","g":false},{"id":"SOURCE-REFERENCE:PMC10809599:001","p":"PMC10809599","d":8,"c":true,"su":"DSPE-PEG2K-NHS","re":"reported_reacted_with","ob":"WY peptide","co":[["WY_equivalents","1.1"],["triethylamine_equivalents","3.0"],["solvent","DMF"],["time","12 h"],["temperature","ambient"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":761,"h":"6dfb70efb7b3dea562412be4d36aabfe1a7eb20ae42cc6e4e7675a16080b0b35","g":false},{"id":"SOURCE-REFERENCE:PMC10809599:002","p":"PMC10809599","d":8,"c":true,"su":"HAMA microspheres","re":"reported_physically_integrated_carrier","ob":"WY-Lip/UA","co":[["water_phase","5 wt% mixture"],["HAMA:WY-Lip/UA:photoinitiator","80:12:8 w/w/w"],["UV","5 min"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[1]/p[4]","cs":0,"ce":1554,"h":"4045b34f6fe3267673ca8b419adda656de2d90984b12c286c2a60c01ccba45aa","g":false},{"id":"SOURCE-REFERENCE:PMC10961276:001","p":"PMC10961276","d":9,"c":true,"su":"TPE-X7","re":"reported_fluorescence_response_to","ob":"HA","co":[["probe","1.0 μM"],["HA","0.5 mg/mL"],["temperature","25°C"],["buffer","PBS pH 7.4"],["HA_MW","1500–1800 kDa"]],"en":"Fluorescence enhancement","cp":"750–1000 kDa and 150–300 kDa HA","di":"greater for higher MW","x":"./body[1]/sec[2]/sec[1]/p[2]","cs":0,"ce":179,"h":"53ee88e94bf9b2972b099cf916f7726b327636e04fbba83744d48e4b3a40e2ea","g":false},{"id":"SOURCE-REFERENCE:PMC10961276:002","p":"PMC10961276","d":9,"c":true,"su":"TPE-X7","re":"reported_modification_position_affects","ob":"HA fluorescence response","co":[["TPE-X7","N-terminal fluorophore"],["X7-TPE","additional C-terminal Lys with TPE on ε-amino group"]],"en":"Fold response at 0.5 mg/mL HA","cp":"C-terminal and dual TPE modifications","di":"N-terminal single TPE greater","x":"./body[1]/sec[4]/p[1]","cs":0,"ce":1458,"h":"6f06b08b57d9c85133fb95d1e6dc95cb8c5de5831ece05f8b05e3df80d1fb701","g":false},{"id":"SOURCE-REFERENCE:PMC10994242:001","p":"PMC10994242","d":10,"c":false,"su":"ANP","re":"reported_electrostatic_association_with","ob":"HA component of HA-GNP","co":[],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":773,"h":"81b570f5066b3775eae36d3e01d204ad30c4d44d9dedaf0b1cd7bbd79626c5cf","g":false},{"id":"SOURCE-REFERENCE:PMC10994242:002","p":"PMC10994242","d":10,"c":true,"su":"ANP-HA-GNP","re":"reported_assessed_for","ob":"CAM tumor formation/weight/size","co":[["models","Y79-Etop and WERI-Etop"],["statistical_test","one-way ANOVA with Newman–Keuls post-test"]],"en":"CAM tumor endpoints","cp":"PBS-treated control","di":null,"x":"./body[1]/sec[3]/sec[3]/fig[2]","cs":0,"ce":777,"h":"c1e051d2452f54db59d1f2f23ea48d3e7966cce20dbd1c3753ac0d4405492073","g":false},{"id":"SOURCE-REFERENCE:PMC10733684:001","p":"PMC10733684","d":6,"c":true,"su":"NorHA scaffold","re":"reported_modified_to_carry","ob":"N-cadherin mimetic peptide","co":[["cells","ACPCs 20 million/mL"],["crosslink","405 nm, 8 min, ~10 mW/cm2, LAP and source-named DTT"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[3]/sec[1]/p[1]","cs":0,"ce":1355,"h":"c286d89891e220e4ae0b499ee0883b9b347d13c74af02211de2292711eb6cb85","g":false},{"id":"SOURCE-REFERENCE:PMC10733684:002","p":"PMC10733684","d":6,"c":true,"su":"Non-neotissue scaffold and medium constituents","re":"reported_confound","ob":"NIR-based construct assessment","co":[["HAV","present in 40 of 69 test constructs"],["Workflow_A","81 constructs, technical replicates averaged"],["Workflow_B","12 acellular controls excluded"]],"en":"NIR classification/construct maturity assessment","cp":null,"di":null,"x":"./body[1]/sec[2]/p[4]","cs":0,"ce":1408,"h":"d0db7dfb7fa3b26cffabba23e98ea54b5b254defac87b788714c8db5924407a2","g":false},{"id":"SOURCE-REFERENCE:PMC10755722:001","p":"PMC10755722","d":7,"c":true,"su":"Omiganan-NH—NH2","re":"reported_reacted_with","ob":"dexamethasone","co":[["equimolar_inputs","179.42 mg and 39.24 mg"],["solvent","10 ml DMSO"],["TFA","100 μl"],["reaction","2 days room temperature"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":1580,"h":"c83355dc85a2ba32787904a691c7d576f41f7829a0e88e993312e1a6e35b7f4c","g":false},{"id":"SOURCE-REFERENCE:PMC10755722:002","p":"PMC10755722","d":7,"c":true,"su":"HA coating on Omi-hyd-Dex core nanoparticles","re":"reported_EDC_Sulfo_NHS_crosslink_operation","ob":"stable Omi-hyd-Dex@HA nanoparticles","co":[["HA","5 mg in 20 ml water"],["EDC","2 mg"],["Sulfo-NHS","0.5 mg"],["reaction","4 h"],["release_assay","PBS pH 6.0 or 7.4, with/without HAase"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[1]","cs":0,"ce":1580,"h":"c83355dc85a2ba32787904a691c7d576f41f7829a0e88e993312e1a6e35b7f4c","g":false},{"id":"SOURCE-REFERENCE:PMC11935003:001","p":"PMC11935003","d":22,"c":true,"su":"HAMA microspheres","re":"reported_encapsulated","ob":"G-MTX peptide-dendrimer nanoparticles","co":[["fabrication","microfluidic droplets and UV polymerization"],["diameter_reported","145 ± 25 μm"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[1]/p[3]","cs":0,"ce":1287,"h":"c948d6ee52235d99dbf218117e56ec15210aec339d46aa0b9b78fca97f2ea022","g":false},{"id":"SOURCE-REFERENCE:PMC11935003:002","p":"PMC11935003","d":22,"c":true,"su":"H-G-MTX","re":"reported_prolonged_joint_fluorescence_retention_vs","ob":"AF750-labelled G-MTX","co":[["model","rat joint cavity"],["observation","three consecutive weeks"]],"en":"Fluorescence retention","cp":"G-MTX nanoparticles","di":"longer","x":"./body[1]/sec[2]/p[6]","cs":0,"ce":1105,"h":"cf9a0add71d6267e2ae7830461db5f0829b204dd94e83e47da9367c0f9e9052c","g":false},{"id":"SOURCE-REFERENCE:PMC10582360:001","p":"PMC10582360","d":3,"c":true,"su":"HA-PD","re":"reported_reacted_with","ob":"CysKPV","co":[["HA_input","100 mg sodium hyaluronate"],["HA-PD_activation","DMTMM·Cl, PBS pH 7.4"],["CysKPV","6.1 mg, overnight RT"],["reported_loading","2.5% w/w"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[1]/p[5]","cs":0,"ce":994,"h":"4baefa3450fbe7d9146af9a0452952e9c02815ebd120881a6068074c5612c84d","g":false},{"id":"SOURCE-REFERENCE:PMC10582360:002","p":"PMC10582360","d":3,"c":true,"su":"Lipid nanocapsules","re":"reported_encapsulated","ob":"teduglutide","co":[["method","phase inversion and reverse micelles"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[3]/p[1]","cs":0,"ce":906,"h":"16be71e8ca83ea79093669e67c95fb56b0d4714d70cf4c69e0a7e278a11e712e","g":false},{"id":"SOURCE-REFERENCE:PMC10602521:001","p":"PMC10602521","d":5,"c":true,"su":"Clickable dynamic HA hydrogel","re":"reported_post_printing_immobilization_of","ob":"azido-RGD motif","co":[["peptide","300 μM"],["incubation","24 h, 37°C, 5% CO2"],["wash","3×PBS"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[3]/sec[2]/p[2]","cs":0,"ce":1199,"h":"49254cd6e1ec4ea4fa2d3e501c3154d21bc4bf58136ed75ad3069a938af3ee64","g":false},{"id":"SOURCE-REFERENCE:PMC10602521:002","p":"PMC10602521","d":5,"c":true,"su":"RGD-N3 modified clickable HA hydrogels","re":"reported_increased_ASC_adhesion_vs","ob":"no immobilized adhesive molecules","co":[["time_trigger","day 1 or day 2 after printing"]],"en":"Nuclei/actin surface and cell sphericity","cp":"unmodified clickable hydrogel","di":"greater adhesion","x":"./body[1]/sec[2]/sec[3]/sec[2]/p[2]","cs":0,"ce":1199,"h":"49254cd6e1ec4ea4fa2d3e501c3154d21bc4bf58136ed75ad3069a938af3ee64","g":false},{"id":"SOURCE-REFERENCE:PMC10582411:001","p":"PMC10582411","d":4,"c":false,"su":"HA component of multifunctional delivery vector","re":"author_reports_conjugated_to","ob":"NLS-GE11 fusion peptide","co":[],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[2]","cs":0,"ce":1042,"h":"1576ad94467f50fd7d044e04088ea86bfcf5454d759477f7905135a60d34b8fc","g":false},{"id":"SOURCE-REFERENCE:PMC10582411:002","p":"PMC10582411","d":4,"c":false,"su":"KALA","re":"reported_present_as_separate_component","ob":"multifunctional delivery vector","co":[],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[2]/sec[1]/p[2]","cs":0,"ce":1042,"h":"1576ad94467f50fd7d044e04088ea86bfcf5454d759477f7905135a60d34b8fc","g":false},{"id":"SOURCE-REFERENCE:PMC10391974:001","p":"PMC10391974","d":2,"c":true,"su":"Melittin","re":"reported_electrostatic_loading_onto","ob":"HA-HPPS nanoparticles","co":[["incubation","overnight 4°C"],["input_selected","0.18 μmol"],["loaded_amount","0.076 ± 0.009 μmol"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[1]/p[5]","cs":0,"ce":2436,"h":"319029cfe2526300c20f75a6b94c688bb06b2872c17fd6782ad43e44348b594c","g":false},{"id":"SOURCE-REFERENCE:PMC10391974:002","p":"PMC10391974","d":2,"c":true,"su":"MLT-HA-HPPS","re":"reported_time_dependent_cytotoxicity_vs","ob":"free melittin","co":[["model","4T1 cells"],["time","3 h, 6 h, 12 h"]],"en":"IC50","cp":"free melittin","di":"less cytotoxic at 3 h; more at 6/12 h","x":"./body[1]/sec[2]/sec[2]/p[1]","cs":0,"ce":4281,"h":"e84495c549e2b7fd7b06549d58d1a1ff3985ea58b6559892f435179836ba50a8","g":false},{"id":"SOURCE-REFERENCE:PMC10311651:001","p":"PMC10311651","d":1,"c":true,"su":"HA-RT intermediate","re":"reported_EDC_assisted_reaction_with","ob":"source-named SS-31","co":[["activation","0°C EDC·HCl"],["reaction","overnight RT dark"],["dialysis","MWCO3500 12 h"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[1]/p[3]","cs":0,"ce":1797,"h":"e0089239b351ade623ee4445960f2870329cc81e67d1aa721b5723dc2ab7a188","g":false},{"id":"SOURCE-REFERENCE:PMC10311651:002","p":"PMC10311651","d":1,"c":true,"su":"SHR micelles","re":"reported_enhanced_BBB_delivery_vs","ob":"HR micelles","co":[["models","in-vitro BBB and tMCAO rat biodistribution"]],"en":"BBB delivery/brain enrichment","cp":"HR without source-named SS-31","di":"greater","x":"./body[1]/sec[2]/sec[2]/p[1]","cs":0,"ce":1657,"h":"720ad220505724fcbb865d8df1ed705f944d78bc38cafd31ca0dc831dda27d1f","g":false},{"id":"SOURCE-REFERENCE:PMC10254404:001","p":"PMC10254404","d":0,"c":true,"su":"HA","re":"reported_electrostatic_adsorption_to","ob":"hPDPA/PArg hybrid","co":[["assembly","PB pH7.4, 10mM; 2 h rapid stirring then dialysis"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[1]/p[3]","cs":0,"ce":1271,"h":"8d890e125cbf7d5b71f09f57f757198a54e9320d289c602eba02493e3c498736","g":false},{"id":"SOURCE-REFERENCE:PMC10254404:002","p":"PMC10254404","d":0,"c":true,"su":"h2PDPA/PArg8/HA","re":"reported_low_carrier_cytotoxicity_in","ob":"HeLa cells","co":[["carrier_concentration","1.96–250 μg/mL"]],"en":"Cell viability","cp":"drug-loaded formulation discussed separately","di":"above90% at carrier up to250 μg/mL","x":"./body[1]/sec[3]/p[9]","cs":0,"ce":882,"h":"cf708da8656554dc2a7165e7026e4d3ae8df2b8b179c85d6483c66dbe2a35979","g":false},{"id":"SOURCE-REFERENCE:PMC9960911:001","p":"PMC9960911","d":51,"c":true,"su":"HA-Tβ4 hydrosol","re":"reported_physically_mixed_into","ob":"PCL electrospun fiber core","co":[["HA_solution","1.2 wt%"],["Tβ4_solution","3.33 mg/ml"],["hydrosol_aliquot","150 μl of 1% HA-Tβ4 hydrosol"],["fabrication","W/O emulsion electrospinning"]],"en":null,"cp":null,"di":null,"x":"./body[1]/sec[1]/p[4]","cs":0,"ce":1109,"h":"5c2545b10677724d397ffcbf7e9fa6dcddb8197e7aa4f1c3c94d509d7178aaa3","g":false},{"id":"SOURCE-REFERENCE:PMC9960911:002","p":"PMC9960911","d":51,"c":true,"su":"Core Tβ4 and shell aprotinin","re":"reported_evaluated_for_programmed_release","ob":"GPH fiber scaffold","co":[["assay","100 mg 1×1cm fibers in10ml PBS, ELISA days1–9"]],"en":"Peptide release","cp":null,"di":null,"x":"./body[1]/sec[1]/p[4]","cs":0,"ce":1109,"h":"5c2545b10677724d397ffcbf7e9fa6dcddb8197e7aa4f1c3c94d509d7178aaa3","g":false}],"paired":[{"q":"DEV14-001","s":1.0,"t":0.6667,"facts":0},{"q":"DEV14-002","s":1.0,"t":0.6667,"facts":0},{"q":"DEV14-003","s":0.3333,"t":0.4167,"facts":0},{"q":"DEV14-004","s":0.5714,"t":0.4286,"facts":0},{"q":"DEV14-005","s":1.0,"t":1.0,"facts":2},{"q":"DEV14-006","s":1.0,"t":1.0,"facts":0},{"q":"DEV14-007","s":0.6,"t":0.2,"facts":2},{"q":"DEV14-008","s":1.0,"t":0.0,"facts":2},{"q":"DEV14-009","s":0.1429,"t":0.2143,"facts":2},{"q":"DEV14-010","s":0.5,"t":0.25,"facts":1},{"q":"DEV14-011","s":0.3529,"t":0.2941,"facts":1},{"q":"DEV14-012","s":0.55,"t":0.75,"facts":0},{"q":"DEV14-013","s":0.1429,"t":0.0,"facts":0},{"q":"DEV14-014","s":1.0,"t":1.0,"facts":0},{"q":"DEV14-015","s":0.25,"t":0.5,"facts":0},{"q":"DEV14-016","s":0.5357,"t":0.75,"facts":1},{"q":"DEV14-017","s":1.0,"t":0.6667,"facts":0},{"q":"DEV14-018","s":0.7,"t":0.8,"facts":1},{"q":"DEV14-019","s":1.0,"t":0.6667,"facts":0},{"q":"DEV14-020","s":1.0,"t":0.5,"facts":0},{"q":"DEV14-021","s":0.7273,"t":0.6364,"facts":0},{"q":"DEV14-022","s":0.1333,"t":0.4,"facts":0},{"q":"DEV14-023","s":0.5,"t":0.6818,"facts":0},{"q":"DEV14-024","s":0.7,"t":0.9,"facts":2}],"refs":{"5":"P. Lewis, E. Perez, A. Piktus, F. Petroni, V. Karpukhin, N. Goyal, H. Küttler, M. Lewis, W. Yih, T. Rocktäschel, S. Riedel and D. Kiela, Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks, NeurIPS, 2020; archived manuscript version 4, 2021.","6":"D. Edge, H. Trinh, N. Cheng, J. Bradley, A. Chao, A. Mody, S. Truitt, D. Metropolitansky, R. O. Ness and J. Larson, From Local to Global: A Graph RAG Approach to Query-Focused Summarization, arXiv preprint, 2024; version 2, 2025.","7":"T. Marwitz, A. Colsmann, B. Breitung, C. Brabec, C. Kirchlechner, E. Blasco, G. C. Marques, H. Hahn, M. Hirtz, P. A. Levkin, Y. M. Eggeler, T. Schlöder and P. Friederich, Predicting new research directions in materials science using large language models and concept graphs, Nature Machine Intelligence, 2026, 8, 535–544.","8":"D. Zhou, Y. Zhu, X. Wang, H. Zhou, Y. He, J. Chen, S. Staab and E. Kharlamov, What Breaks Knowledge Graph based RAG? Benchmarking and Empirical Insights into Reasoning under Incomplete Knowledge, Proceedings of EACL, 2026, 2522–2538.","9":"N. Nishida, R. F. Munne, S. Liu, N. Tokunaga, Y. Yamagata, F. Cheng, K. Kozaki and Y. Matsumoto, Dissecting GraphRAG: A Modular Analysis of Knowledge Structuring for Factoid Question Answering, Transactions of the Association for Computational Linguistics, 2026, 14, 627–655.","10":"D. Wadden, S. Lin, K. Lo, L. L. Wang, M. van Zuylen, A. Cohan and H. Hajishirzi, Fact or Fiction: Verifying Scientific Claims, in Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing, Association for Computational Linguistics, 2020, pp. 7534–7550.","11":"Q. Jin, B. Dhingra, Z. Liu, W. Cohen and X. Lu, PubMedQA: A Dataset for Biomedical Research Question Answering, in Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP), Association for Computational Linguistics, 2019, pp. 2567–2577.","12":"C. S. J. Chan, A. Naik, M. Akamatsu, H. Bekele, E. Bransom, I. Campbell and J. Sparks, Overview of the Context24 Shared Task on Contextualizing Scientific Claims, in Proceedings of the Fourth Workshop on Scholarly Document Processing (SDP 2024), Association for Computational Linguistics, 2024, pp. 12–21.","14":"T. Tarsi, H. Adel, J. H. Metzen, D. Zhang, M. Finco and A. Friedrich, SciOL and MuLMS-Img: Introducing a Large-Scale Multimodal Scientific Dataset and Models for Image-Text Tasks in the Scientific Domain, in Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision (WACV), 2024, pp. 4560–4571.","16":"X. Ho, Y.-A. Wu, S. Kumar, T. C. Xia, F. Boudin, A. Greiner-Petter and A. Aizawa, SciClaimEval: Cross-modal Claim Verification in Scientific Papers, in Proceedings of the Fifteenth Language Resources and Evaluation Conference, ELRA Language Resource Association, 2026, pp. 11060–11071.","19":"C. Costello, J. Mayfield, E. Turcan, C. Piatko, C. K. Pikas, J. Rokisky, S. Scheck, C. Ribaudo, R. Bose and A. Memory, SFBench: The SciFy Scientific Feasibility Benchmark, arXiv:2606.29630, version 1, 2026.","21":"P. Jansen, S. Hassan and R. Wang, Matter-of-Fact: A Benchmark for Verifying the Feasibility of Literature-Supported Claims in Materials Science, in Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing, Association for Computational Linguistics, 2025, pp. 4090–4102."}};</script>
+<script>(()=>{
+'use strict';
+const D=window.DECK_DATA||{recs:[],paired:[],refs:{}};
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const FINAL=/[?&]final\b/.test(location.search);
+const ROOT=document.documentElement;
+if(FINAL)ROOT.classList.add('noanim','final');
+const stage=$('#stage');let SC=1;
+const S=$$('.slide');let cur=-1,step=0;const H={};
+const VID='HA多肽方法学论文_宣传片_含对比与意义_20261014.mp4';
+
+const NOTES={
+s1:'各位好。今天汇报的是一篇方法学论文：面向透明质酸–肽研究的条件感知证据整理与有边界的 AI 诊断。三个关键词——可审计、有边界、对局限诚实。稿件仍在准备中，是 v15.57 候选稿，尚未投稿。',
+s2:'先说出发点：一条结论如果脱离了它的条件，就不再是同一条结论。在 HA–肽 材料文献里，材料阶段、剂量基准、对照、暴露方案、实验单元，都是命题本身的一部分。',
+s3:'表 3 总结了八类限定条件。点击任意一类可以看到原文案例，比如剂量基准：局部 0.1 µM 对比皮下 1 µM，名义上的十倍浓度比并不等于肽负荷降低十倍。下一步模拟只做段落级绑定会怎样：条件读得出来，却保不住。再下一步恢复——我们的做法是让条件作为一等字段留在结论上，缺失要显式记录。强调：这些例子界定推理边界，不是模型性能标签。',
+s4:'证据库：52 篇固定版本全文、113 条报告元组、356 个原文定位符、51 道来源报告问题。每个光点是一条记录，下面的薄片是它所属的 XML 版本；青色表示条件字段非空（99 条）。可以拖动旋转、点击查看记录。下一步打开一条示例记录。注意两点：空字段写的是“未抽取”，不等于原文没写；所有记录都是 AI 转录，不是人工金标准，is_gold 等于 0。',
+s5:'同事实设计。GRAPH 与 strong FLAT 共享同一事实表、实体 ID、三个 BM25 种子、两步关联深度、评分与平局规则、打包器，只有检索实现不同。下一步把两边的证据包叠起来比对：差异为 0 字节。再下一步：24 道题全部逐字节一致，72 个证据包可离线复现。这个结论只限于已保存的策略。',
+s6:'因此，图本身的增量 Δgraph 为 0——它被单独测了出来。下一步看 Δcuration：结构化证据包与文本检索的已知阳性节点覆盖率是 65.6% 对 55.8%，完整引文覆盖率 64.8% 对 55.8%。但它同时改变了策展事实、单元选择与打包，参考标签又与事实同源，所以只作描述性报告，不说成检索优越，也不归因于图拓扑。如有提问，可点“逐题查看”：24 题中 12 题更高、3 题持平、9 题更低。',
+s7:'五层记分卡，对应表 1 和表 2：来源保真、条件保留、实现对等、暴露语料检索、契约合规。点击每一层，可以看到通过意味着什么、不能确立什么，以及实测结果。下一步：我们不把它们合成总分，每层各自报告分母。左下角是 SciFact 外部校准，只用来校准检索管线。',
+s8:'六项已执行、可重放的核验，逐张出现：552/553 定位与引文吻合；14/14 篡改对照被拒绝；1,695 个字段状态显式记录；24/24 证据包一致；48/48 引用 ID 可解析；SciFact 外部校准 0.862。每张卡片背面写着分母和出处，例如 48/48 背面如实写明其中 35/48 是连续子串。',
+s9:'与相关工作的关系——这是定位对比，不是排行榜。RAG 以检索文本为条件生成；GraphRAG 用图索引和社区摘要，我们的邻接流水线不复现它；模块化分析区分检索、知识单元大小和推理，我们再分离一层：遍历与被遍历的策展事实；公开基准都是特定任务，没有盲法 HA–肽 裁决。点击任一行，可看到稿件原句和完整参考文献。',
+s10:'为什么这很重要？左边是典型比较：拖动滑块，检索算法、策展事实、证据打包、输入预算四件事一起变，结果差异无法归因。下一步锁定右边的共享部分——只剩检索实现在变，这时测到的差异才是 Δgraph。',
+s11:'意义有四点：一，条件成为一等字段；二，Δgraph 与 Δcuration 分开报告；三，没有专家金标准也可以审计；四，下一步的门槛已经写明。点击卡片可看稿件原句。最后一句：为今后真正的比较评估，打下可审计的地基。',
+s12:'总结与边界：本工作不声称准确率、图谱优越性或新发现；AI 转录不是人工金标准。真正的比较评估还需要合格的参考标准、未触碰的研究家族划分和冻结的评分协议。谢谢，欢迎提问。'};
+
+/* ---------- layout ---------- */
+function fit(){SC=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`scale(${SC})`;resizeBg()}
+/* ---------- starfield ---------- */
+const bg=$('#bg'),bx=bg.getContext('2d');let BW=0,BH=0,DPR=1,grad=null;const STARS=[];
+for(let i=0;i<820;i++)STARS.push({x:Math.random()*2-1,y:Math.random()*2-1,z:Math.random(),c:Math.random()<.16?'155,135,255':(Math.random()<.2?'94,242,220':'220,232,255')});
+function resizeBg(){DPR=Math.min(devicePixelRatio||1,2);BW=bg.width=Math.round(innerWidth*DPR);BH=bg.height=Math.round(innerHeight*DPR);
+ grad=bx.createRadialGradient(BW*.5,BH*.42,0,BW*.5,BH*.5,Math.max(BW,BH)*.75);grad.addColorStop(0,'#0C1733');grad.addColorStop(.55,'#060C1E');grad.addColorStop(1,'#02050D')}
+let wv=0,wd=1;function warp(d){if(!FINAL){wv=1;wd=d}}
+function drawBg(dt){bx.fillStyle=grad;bx.fillRect(0,0,BW,BH);
+ const cx=BW/2,cy=BH/2,f=Math.max(BW,BH)*.32,sp=(.000035+wv*.0019)*dt*wd;
+ bx.lineCap='round';
+ for(const s of STARS){const pz=s.z;s.z-=sp;if(s.z<=.03){s.z+=.97;s.x=Math.random()*2-1;s.y=Math.random()*2-1;continue}if(s.z>1){s.z-=.97;continue}
+  const x=cx+s.x/s.z*f,y=cy+s.y/s.z*f;if(x<-50||x>BW+50||y<-50||y>BH+50)continue;
+  const a=Math.min(1,(1-s.z)*1.25),r=((1-s.z)*1.9+.25)*DPR;
+  if(wv>.06){const qz=Math.min(1,pz+sp*7*wd),qx=cx+s.x/qz*f,qy=cy+s.y/qz*f;bx.strokeStyle=`rgba(${s.c},${a})`;bx.lineWidth=r;bx.beginPath();bx.moveTo(qx,qy);bx.lineTo(x,y);bx.stroke()}
+  else{bx.fillStyle=`rgba(${s.c},${a})`;bx.beginPath();bx.arc(x,y,r,0,6.283);bx.fill()}}
+ wv*=Math.pow(.93,dt/16);if(wv<.01)wv=0}
+
+/* ---------- build engine ---------- */
+const maxStep=i=>+(S[i].dataset.steps||0);
+function applyBuild(sl,st){$$('.b',sl).forEach(e=>{const s=+(e.dataset.s||0),to=e.dataset.to!=null?+e.dataset.to:99;e.classList.toggle('on',st>=s&&st<to)});for(let k=1;k<=6;k++)sl.classList.toggle('k'+k,st>=k);sl.dataset.step=st}
+function clearBuild(sl){$$('.b.on',sl).forEach(e=>e.classList.remove('on'));for(let k=1;k<=6;k++)sl.classList.remove('k'+k)}
+const hk=(n,...a)=>{const h=H[S[cur].id];h&&h[n]&&h[n](...a)};
+function go(i,s=0){i=Math.max(0,Math.min(S.length-1,i));closeModal();
+ if(i!==cur){const old=S[cur];
+  if(old){hk('leave');old.classList.remove('active');old.classList.toggle('past',i>cur);setTimeout(()=>{if(!old.classList.contains('active')){clearBuild(old);old.classList.remove('past')}},850);warp(i>cur?1:-1)}
+  cur=i;const sl=S[cur];clearBuild(sl);sl.classList.remove('past');void sl.offsetWidth;sl.classList.add('active');step=Math.min(s,maxStep(cur));
+  const run=()=>{applyBuild(sl,step);hk('enter',step)};FINAL?run():requestAnimationFrame(()=>requestAnimationFrame(run));
+ }else{step=Math.min(s,maxStep(cur));applyBuild(S[cur],step);hk('step',step)}
+ ui()}
+function next(){if(modalOn()){closeModal();return}if(step<maxStep(cur)){step++;applyBuild(S[cur],step);hk('step',step);ui()}else if(cur<S.length-1)go(cur+1,0)}
+function prev(){if(modalOn()){closeModal();return}if(step>0){step--;applyBuild(S[cur],step);hk('step',step);ui()}else if(cur>0)go(cur-1,maxStep(cur-1))}
+const TOTAL=S.reduce((a,_,i)=>a+maxStep(i)+1,0);
+function ui(){const before=S.slice(0,cur).reduce((a,_,i)=>a+maxStep(i)+1,0);$('#prog i').style.width=((before+step+1)/TOTAL*100)+'%';
+ $('#hud .cnt').textContent=`${cur+1} / ${S.length}`+(maxStep(cur)?` · ${step}/${maxStep(cur)}`:'');
+ try{history.replaceState(null,'','#'+(cur+1))}catch(e){}
+ $('#notesbar div').textContent=NOTES[S[cur].id]||'';$$('#toc .it').forEach((e,k)=>e.classList.toggle('cur',k===cur));updPres()}
+
+/* ---------- overlays ---------- */
+const modal=$('#modal'),mbox=$('#modal .box');
+function openModal(html){mbox.innerHTML='<button class="mx" data-a="close">×</button>'+html;modal.classList.add('on')}
+function closeModal(){modal.classList.remove('on')}
+const modalOn=()=>modal.classList.contains('on');
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+const toc=$('#toc');$('#toc .grid').innerHTML=S.map((s,i)=>`<button class="it" data-i="${i}"><span>${String(i+1).padStart(2,'0')}</span><strong>${esc(s.dataset.title||'')}</strong></button>`).join('');
+toc.addEventListener('click',e=>{const it=e.target.closest('.it');if(it){go(+it.dataset.i,0)}toc.classList.remove('on')});
+const notesbar=$('#notesbar'),black=$('#black');
+function fs(){if(document.fullscreenElement)document.exitFullscreen();else ROOT.requestFullscreen&&ROOT.requestFullscreen().catch(()=>{})}
+/* video */
+const vov=$('#vidov'),vbtn=$('#vbtn'),pv=document.createElement('video');pv.controls=true;pv.preload='metadata';pv.playsInline=true;vov.appendChild(pv);
+pv.addEventListener('loadedmetadata',()=>{vbtn.hidden=false});pv.addEventListener('error',()=>{vbtn.hidden=true});
+if(!FINAL)pv.src=encodeURI(VID);
+const vidOn=()=>vov.classList.contains('on');
+function openVid(){vov.classList.add('on');try{pv.currentTime=0}catch(e){}pv.play().catch(()=>{})}
+function closeVid(){pv.pause();vov.classList.remove('on')}
+vbtn.addEventListener('click',e=>{e.stopPropagation();vbtn.blur();openVid()});$('#vidov .x').addEventListener('click',closeVid);
+
+/* ---------- presenter view ---------- */
+let PW=null,T0=Date.now();
+function presHTML(){const css=$('style').textContent;return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>演讲者视图 · HA–肽方法学汇报</title><style>${css}
+html,body{overflow:auto;background:#060B19}body{padding:26px 32px;font-family:var(--sans)}
+.top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(143,163,199,.25);padding-bottom:14px}
+.top b{font:700 30px/1 var(--mono);color:var(--acc)}.top span{font:600 18px/1 var(--mono);color:var(--soft)}
+.top button,.nav button{background:rgba(94,242,220,.1);border:1px solid rgba(94,242,220,.5);color:var(--acc);border-radius:999px;padding:8px 18px;font:600 15px var(--sans);margin-left:8px}
+.cols{display:grid;grid-template-columns:1.25fr 1fr;gap:26px;margin-top:18px}
+h6{margin:0 0 10px;font:600 13px/1 var(--mono);letter-spacing:.2em;color:var(--vio)}
+#pt{font:700 26px/1.3 var(--serif);margin:0 0 14px}#pn{font:400 21px/1.8 var(--sans);color:var(--ink)}
+.pv{position:relative;width:480px;height:270px;overflow:hidden;border-radius:10px;border:1px solid rgba(143,163,199,.3);background:#050A18}
+.pv>div{position:absolute;left:0;top:0;width:1920px;height:1080px;transform:scale(.25);transform-origin:0 0}
+.pv .slide{opacity:1;visibility:visible;transform:none}#nx{font:600 18px/1.4 var(--sans);color:var(--soft);margin:10px 0 16px}
+.nav{margin-top:16px}</style></head><body class="noanim">
+<div class="top"><span id="pc"></span><div><b id="tm">00:00</b><button id="rs">计时归零</button></div></div>
+<div class="cols"><div><h6>当前 · 讲稿</h6><h2 id="pt"></h2><div id="pn"></div></div>
+<div><h6>下一步</h6><div id="nx"></div><div class="pv"><div id="pvx"></div></div><div class="nav"><button id="bp">‹ 上一步</button><button id="bn">下一步 ›</button></div>
+<p style="font:400 14px/1.6 var(--sans);color:var(--dim);margin-top:18px">在此窗口按 → / ← / 空格同样可以翻页；主窗口放到投影屏并按 F 全屏。</p></div></div></body></html>`}
+function openPres(){PW=window.open('','ha_presenter','width=1280,height=780');if(!PW){alert('演讲者视图被浏览器拦截：请允许本页面弹出窗口后再按 P。');return}
+ PW.document.open();PW.document.write(presHTML());PW.document.close();
+ PW.document.addEventListener('keydown',e=>{if(key(e.key))e.preventDefault()});
+ PW.document.getElementById('bn').onclick=()=>next();PW.document.getElementById('bp').onclick=()=>prev();PW.document.getElementById('rs').onclick=()=>{T0=Date.now();tickPres()};
+ updPres()}
+function tickPres(){if(!PW||PW.closed)return;const s=Math.floor((Date.now()-T0)/1000);PW.document.getElementById('tm').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+setInterval(tickPres,1000);
+function updPres(){if(!PW||PW.closed)return;const d=PW.document,sl=S[cur];if(!d.getElementById('pc'))return;
+ d.getElementById('pc').textContent=`第 ${cur+1} / ${S.length} 页`+(maxStep(cur)?` · 步骤 ${step}/${maxStep(cur)}`:'');
+ d.getElementById('pt').textContent=sl.dataset.title||'';d.getElementById('pn').textContent=NOTES[sl.id]||'';
+ let ni=cur,ns=step+1;if(ns>maxStep(cur)){ni=cur+1;ns=0}
+ const box=d.getElementById('pvx');box.innerHTML='';
+ if(ni>=S.length){d.getElementById('nx').textContent='（已是最后一步）';return}
+ d.getElementById('nx').textContent=ni===cur?`本页第 ${ns} 步`:`下一页：${S[ni].dataset.title}`;
+ const c=S[ni].cloneNode(true);c.classList.add('active');c.classList.remove('past');applyBuild(c,ns);box.appendChild(d.importNode(c,true))}
+
+/* ---------- input ---------- */
+function key(k){if(vidOn()){if(k==='Escape'){closeVid();return true}return false}
+ switch(k){case'ArrowRight':case'ArrowDown':case' ':case'PageDown':case'Enter':next();break;
+ case'ArrowLeft':case'ArrowUp':case'PageUp':case'Backspace':prev();break;
+ case'Home':go(0,0);break;case'End':go(S.length-1,maxStep(S.length-1));break;
+ case'f':case'F':fs();break;case't':case'T':toc.classList.toggle('on');break;
+ case'n':case'N':notesbar.classList.toggle('on');break;case'p':case'P':openPres();break;
+ case'b':case'B':case'.':black.classList.toggle('on');break;
+ case'Escape':if(modalOn())closeModal();else if(toc.classList.contains('on'))toc.classList.remove('on');else if(black.classList.contains('on'))black.classList.remove('on');else notesbar.classList.remove('on');break;
+ default:return false}return true}
+addEventListener('keydown',e=>{if(e.target.matches&&e.target.matches('input[type=range]')&&/Arrow/.test(e.key))return;if(e.ctrlKey||e.metaKey||e.altKey)return;if(key(e.key))e.preventDefault()});
+const hud=$('#hud');let hudT=0;function showHud(){hud.classList.remove('hide');clearTimeout(hudT);hudT=setTimeout(()=>hud.classList.add('hide'),2600)}
+addEventListener('mousemove',showHud);
+hud.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;b.blur();({prev,next,toc:()=>toc.classList.toggle('on'),notes:()=>notesbar.classList.toggle('on'),pres:openPres,fs})[b.dataset.h]()});
+let tx0=null;addEventListener('touchstart',e=>{tx0=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(tx0==null)return;const dx=e.changedTouches[0].clientX-tx0;tx0=null;if(e.target.closest('canvas,input'))return;if(dx<-60)next();else if(dx>60)prev()},{passive:true});
+addEventListener('resize',fit);
+addEventListener('hashchange',()=>{const n=parseInt(location.hash.slice(1));if(n&&n-1!==cur)go(n-1,FINAL?99:0)});
+stage.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b){b.blur&&b.blur();const f=ACT[b.dataset.a];f&&f(b,e);return}
+ const fl=e.target.closest('.flip');if(fl){fl.classList.toggle('fl');return}});
+const ACT={close:closeModal};
+
+/* ================= S3 orbit ================= */
+(()=>{const sl=$('#s3'),orb=$('.orbit',sl),svg=$('svg.lines',sl),panel=$('.panel',sl),body=$('.body',panel);
+ const C=[['报告物 vs 分析物','1','荧光素标记 HAV 的信号来自标记制剂，而不是局部未标记的接枝密度；Methods 与图 1 图注中标记 HAV 的序列并不一致。','报告物身份与校准是两个独立字段；相互冲突的字符串原样保留。','#5EF2DC'],
+ ['连接路径','58, 77','CGRGDSG 经硫醇–烯连接，不同于高碘酸氧化 / ADH / 腙键网络；肽先偶联到 starPEG，再与修饰 HA 组装。','连接路径与材料阶段随名义成分一起记录。','#6FD3FF'],
+ ['材料阶段','34','150 kDa 是起始 HA，约 100 kDa 是 HA-BCN。','分子量绑定到它所描述的那个材料阶段。','#9B87FF'],
+ ['剂量基准与途径','80','局部 HA–Wm 0.1 µM（相当于 0.55 µM Wm）对比皮下游离 Wm 1 µM。','名义上的 10 倍浓度比，不等于肽负荷降低了 10 倍。','#FFB057'],
+ ['对照与交互','2, 40, 41','REG-HAgel 相对生理盐水的显著性标记，不能确立每一组两两对比、交互作用或协同。','对照与所检验的对比显式记录；“协同”需要写明零假设。','#C38BFF'],
+ ['暴露方案','67','蜂毒肽纳米粒的 IC50 在 3 h 高于游离蜂毒肽，在 6 h 与 12 h 则更低；移除后进行无药培养。','暴露时间与暴露后培养，属于命题本身。','#FF5D6C'],
+ ['实验单元与多重性','78','缺损计数 vs 入组动物；校正 p = 0.14 通过了探索性的 < 0.25 筛选，但未达到 0.05。','实验单元、阈值与多重性范围一并保留。','#8FE3B0'],
+ ['源内冲突','36','同一 Methods 中 KGRGDS 与 KRGDS 交替出现；未找到合成身份记录。','两个字符串都保留，不擅自选定单一序列。','#C8D4EA']];
+ const chips=C.map((c,i)=>{const d=document.createElement('div');d.className='chip';d.style.setProperty('--cc',c[4]);d.innerHTML=`<i>0${i+1}</i>${c[0]}`;d.style.transitionDelay=(i*.06)+'s';
+  d.addEventListener('click',e=>{e.stopPropagation();sel(i)});d.addEventListener('mouseenter',()=>pause=true);d.addEventListener('mouseleave',()=>pause=false);orb.appendChild(d);return d});
+ svg.innerHTML=C.map(c=>`<line x1="700" y1="585" stroke="${c[4]}" stroke-width="1.6" stroke-dasharray="4 7"/>`).join('');const L=$$('line',svg);
+ let ang=-.35,pause=false,si=-1;
+ function sel(i){si=i;const c=C[i];chips.forEach((e,k)=>e.classList.toggle('sel',k===i));panel.style.setProperty('--cc',c[4]);body.style.opacity=0;
+  setTimeout(()=>{body.innerHTML=`<div class="no">类别 0${i+1} / 08 · 文献 [${c[1]}]</div><h3>${c[0]}</h3><div class="lab">原文读法</div><p>${c[2]}</p><div class="lab">→ 存储后果</div><p class="cons">${c[3]}</p>`;body.style.opacity=1},FINAL?0:160)}
+ function place(){chips.forEach((e,i)=>{const a=ang+i*Math.PI/4,x=700+470*Math.cos(a),y=585+235*Math.sin(a),dp=(Math.sin(a)+1)/2,s=.84+.24*dp;
+  e.style.left=x+'px';e.style.top=y+'px';e.style.transform=`translate(-50%,-50%) scale(${s.toFixed(3)})`;e.style.zIndex=10+Math.round(dp*10);
+  L[i].setAttribute('x2',x.toFixed(1));L[i].setAttribute('y2',y.toFixed(1));L[i].setAttribute('stroke-opacity',sl.classList.contains('cmp')?0:(.18+.4*dp).toFixed(2))})}
+ function setCmp(v){if(v&&!sl.classList.contains('cmp')){const sw=$('.sweep',sl);sw.style.animation='none';void sw.offsetWidth;sw.style.animation=''}sl.classList.toggle('cmp',v)}
+ ACT.cmp=()=>setCmp(true);ACT.rst=()=>setCmp(false);
+ H.s3={enter(s){if(si<0)sel(3);setCmp(s===1);place()},step(s){setCmp(s===1)},leave(){},tick(t,dt){if(!pause&&!FINAL)ang+=dt*.00007;place()}};place()})();
+
+/* ================= S4 constellation ================= */
+(()=>{const sl=$('#s4'),cv=$('canvas',sl),cx=cv.getContext('2d'),tip=$('.tip',sl),rp=$('.rp',sl);
+ const R=D.recs,HL='SOURCE-REFERENCE:PMC11423171:001';const nd=52;const per={};
+ const P=R.map(r=>{const k=per[r.d]=(per[r.d]||0);per[r.d]++;const col=r.d%13,row=Math.floor(r.d/13);
+  return{r,x:(col-6)*92+(k%2?10:-10)*(k>0),z:(row-1.5)*118+(k%3-1)*8,y:-(40+k*30),hl:r.id===HL}});
+ const SL=[];for(let i=0;i<nd;i++)SL.push({x:(i%13-6)*92,z:(Math.floor(i/13)-1.5)*118,d:i});
+ let yaw=.55,pitch=.5,cxc=960,cxt=960,hov=null,selp=null,drag=null,moved=0,auto=true;const F=1300,DI=1550,CY=640;
+ function pj(x,y,z){const c=Math.cos(yaw),s=Math.sin(yaw),xr=x*c-z*s,zr=x*s+z*c,cp=Math.cos(pitch),sp=Math.sin(pitch),yr=y*cp-zr*sp,zz=y*sp+zr*cp,k=F/(DI+zz);return[cxc+xr*k,CY+yr*k,zz,k]}
+ function draw(t){cx.clearRect(0,0,1920,1080);
+  const sl2=SL.map(s=>{const c=[[-34,-44],[34,-44],[34,44],[-34,44]].map(([a,b])=>pj(s.x+a,0,s.z+b));return{s,c,z:pj(s.x,0,s.z)[2]}}).sort((a,b)=>b.z-a.z);
+  for(const q of sl2){const h=selp&&selp.r.d===q.s.d;cx.beginPath();q.c.forEach((p,i)=>i?cx.lineTo(p[0],p[1]):cx.moveTo(p[0],p[1]));cx.closePath();
+   cx.fillStyle=h?'rgba(94,242,220,.22)':'rgba(111,211,255,.07)';cx.fill();cx.strokeStyle=h?'rgba(94,242,220,.9)':'rgba(111,211,255,.32)';cx.lineWidth=h?2:1;cx.stroke()}
+  const pp=P.map(p=>{const a=pj(p.x,p.y,p.z),b=pj(p.x,0,p.z);return{p,a,b}}).sort((m,n)=>n.a[2]-m.a[2]);
+  for(const q of pp){cx.strokeStyle=q.p.r.c?'rgba(94,242,220,.22)':'rgba(143,163,199,.2)';cx.lineWidth=1;cx.beginPath();cx.moveTo(q.b[0],q.b[1]);cx.lineTo(q.a[0],q.a[1]);cx.stroke()}
+  for(const q of pp){const[x,y,,k]=q.a,on=q.p===hov||q.p===selp,col=q.p.r.c?'94,242,220':'124,141,181',r=(on?9:5.2)*k*1.15;
+   const g=cx.createRadialGradient(x,y,0,x,y,r*3.2);g.addColorStop(0,`rgba(${col},.55)`);g.addColorStop(1,`rgba(${col},0)`);cx.fillStyle=g;cx.beginPath();cx.arc(x,y,r*3.2,0,6.283);cx.fill();
+   cx.fillStyle=`rgb(${col})`;cx.beginPath();cx.arc(x,y,r,0,6.283);cx.fill();
+   if(q.p===selp){const pr=r+8+4*Math.sin(t*.005);cx.strokeStyle='rgba(255,176,87,.95)';cx.lineWidth=2.5;cx.beginPath();cx.arc(x,y,pr,0,6.283);cx.stroke()}}
+  P.forEach(p=>{p.sx=pj(p.x,p.y,p.z)})}
+ function local(e){const b=cv.getBoundingClientRect();return[(e.clientX-b.left)*1920/b.width,(e.clientY-b.top)*1080/b.height]}
+ function pick(x,y){let best=null,bd=18*18;for(const p of P){if(!p.sx)continue;const dx=p.sx[0]-x,dy=p.sx[1]-y,d=dx*dx+dy*dy;if(d<bd){bd=d;best=p}}return best}
+ cv.addEventListener('mousedown',e=>{drag=local(e);moved=0;cv.classList.add('drag')});
+ addEventListener('mouseup',e=>{if(!drag)return;cv.classList.remove('drag');const wasClick=moved<5;drag=null;if(wasClick&&e.target===cv){const[x,y]=local(e),p=pick(x,y);if(p)open(p);else close()}});
+ cv.addEventListener('mousemove',e=>{const[x,y]=local(e);if(drag){const dx=x-drag[0],dy=y-drag[1];moved+=Math.abs(dx)+Math.abs(dy);yaw+=dx*.005;pitch=Math.max(.12,Math.min(1.25,pitch+dy*.003));drag=[x,y];auto=false;return}
+  const p=pick(x,y);hov=p;if(p){const r=p.r;tip.innerHTML=`<b>${esc(r.id)}</b><br>${esc(r.su||'—')} → <span class="vio">${esc(r.re||'—')}</span> → ${esc(r.ob||'—')}`;tip.style.left=(selp&&x>760?x-440:Math.min(x+18,1480))+'px';tip.style.top=(y+16)+'px';tip.style.opacity=1}else tip.style.opacity=0});
+ cv.addEventListener('mouseleave',()=>{hov=null;tip.style.opacity=0});
+ const NA='<dd class="na">未抽取（缺失显式记录）<br>未抽取 ≠ 原文没写</dd>';
+ const fd=(l,v)=>`<dt>${l}</dt>`+(v==null||v===''?NA:`<dd>${esc(v)}</dd>`);
+ function open(p){selp=p;const r=p.r;cxt=700;sl.classList.add('rpon');tip.style.opacity=0;hov=null;
+  rp.innerHTML=`<button class="mx" data-a="rpclose">×</button><div class="id">${esc(r.id)}</div><div class="badge">AI 转录 · 非人工金标准 · is_gold = ${r.g?1:0}</div>
+  <dl>${fd('主体',r.su)}${fd('关系',r.re)}${fd('客体',r.ob)}<dt>条件</dt>${r.co&&r.co.length?`<dd>${r.co.map(([k,v])=>`<span class="kv">${k?`<em>${esc(k)}</em>`:''}${esc(v)}</span>`).join('')}</dd>`:NA}
+  ${fd('终点',r.en)}${fd('对照',r.cp)}${fd('方向',r.di)}<dt>来源</dt><dd>${esc(r.p)} <span class="dim">· XML 版本 ${r.d+1}/52</span></dd>
+  <dt>定位</dt><dd class="loc">${esc(r.x||'—')}<br>字符 [${r.cs}, ${r.ce})<br>SHA-256 ${esc((r.h||'').slice(0,24))}…</dd></dl>`;rp.classList.add('on')}
+ function close(){selp=null;cxt=960;rp.classList.remove('on');sl.classList.remove('rpon')}
+ ACT.rpclose=close;
+ function count(){$$('.cnt4 b',sl).forEach(b=>{const n=+b.dataset.n;if(FINAL){b.textContent=n;return}const t0=performance.now();const f=t=>{const u=Math.min(1,(t-t0)/1500),v=1-Math.pow(1-u,3);b.textContent=Math.round(n*v);if(u<1&&sl.classList.contains('active'))requestAnimationFrame(f)};requestAnimationFrame(f)})}
+ const hp=P.find(p=>p.hl);
+ H.s4={enter(s){count();auto=true;if(s>=1)open(hp);else close();if(FINAL){cxc=cxt}},step(s){if(s>=1)open(hp);else close()},leave(){tip.style.opacity=0},
+  tick(t,dt){if(auto&&!hov&&!drag&&!FINAL)yaw+=dt*.00006;cxc+=(cxt-cxc)*Math.min(1,dt*.006);draw(t)}};
+ draw(0)})();
+
+/* ================= S5 same-fact ================= */
+(()=>{const sl=$('#s5');
+ const N=[[60,145],[170,60],[175,230],[300,140],[320,30],[330,255],[450,90],[460,205],[580,50],[590,150],[600,255],[240,150]];
+ const E=[[0,1],[0,2],[1,3],[2,3],[1,4],[3,6],[3,7],[2,5],[6,8],[6,9],[7,9],[7,10],[5,7],[4,6],[0,11],[11,3]];
+ const hitN={0:.2,1:.2,2:.2,3:1,4:1,6:1.8,7:1.8,9:2.4},hitE={'0-1':.6,'0-2':.6,'1-3':.6,'1-4':.6,'3-6':1.4,'3-7':1.4,'6-9':2,'7-9':2};
+ $('svg.g',sl).innerHTML=E.map(([a,b])=>{const t=hitE[a+'-'+b];return`<line x1="${N[a][0]}" y1="${N[a][1]}" x2="${N[b][0]}" y2="${N[b][1]}" ${t!=null?`class="hit" style="--t:${t}s"`:''}/>`}).join('')+N.map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="17" ${hitN[i]!=null?`class="hit" style="--t:${hitN[i]}s"`:''}/>`).join('');
+ const rows=[['F01','subject','relation','object'],['F02','HA-BCN','conjugated_to','RGD'],['F03','HAMA','crosslinked_with','PEG'],['F04','HA-β-CD','ITC_assoc','Ad-IGF-1C'],['F05','HA–Wm','dosed_at','0.1 µM'],['F06','REG-HAgel','vs','saline'],['F07','NP','IC50_at','6 h'],['F08','HAV','labelled','FITC'],['F09','KGRGDS','conflicts','KRGDS']];
+ const hit={2:.05,3:.6,5:1.7,6:2.25,8:3.35};
+ $('.tbl',sl).innerHTML='<div class="hd5"><span>id</span><span>subject</span><span>relation</span><span>object</span></div>'+rows.slice(1).map((r,i)=>`<div ${hit[i+1]!=null?`class="hit" style="--t:${hit[i+1]}s"`:''}><span>${r[0]}</span><span>${r[1]}</span><span>${r[2]}</span><span>${r[3]}</span></div>`).join('')+'<span class="scanbar"></span>';
+ $$('.strip',sl).forEach(s=>s.innerHTML=Array.from({length:12},(_,k)=>`<i style="--k:${k}"></i>`).join(''));
+ ACT.replay=()=>{go(cur,0);$$('.hit,.scanbar,.strip i',sl).forEach(e=>{e.style.animation='none';void e.offsetWidth;e.style.animation=''})};
+ H.s5={}})();
+
+/* ================= S6 rings + per-question ================= */
+(()=>{const sl=$('#s6'),C=2*Math.PI*120;
+ function rings(on){$$('.fg',sl).forEach(c=>c.style.strokeDasharray=on?`${C*(+c.dataset.p)/100} ${C}`:`0 ${C}`)}
+ H.s6={enter(s){rings(s>=1)},step(s){rings(s>=1)},leave(){rings(false)}};
+ ACT.perq=()=>{const rows=[...D.paired].sort((a,b)=>(b.s-b.t)-(a.s-a.t)||a.q.localeCompare(b.q));
+  const hi=rows.filter(r=>r.s>r.t).length,eq=rows.filter(r=>r.s===r.t).length,lo=rows.filter(r=>r.s<r.t).length;
+  const z=rows.filter(r=>!r.facts),zh=z.filter(r=>r.s>r.t).length,ze=z.filter(r=>r.s===r.t).length,zl=z.filter(r=>r.s<r.t).length;
+  const ms=rows.reduce((a,r)=>a+r.s,0)/rows.length,mt=rows.reduce((a,r)=>a+r.t,0)/rows.length;
+  const h=rows.map(r=>{const a=Math.min(r.s,r.t)*100,b=Math.max(r.s,r.t)*100,col=r.s>r.t?'#5EF2DC':r.s<r.t?'#FFB057':'#8FA3C7',d=r.s-r.t;
+   return`<div class="row"><span>${esc(r.q)}${r.facts?'':' ○'}</span><div class="trk"><div class="seg" style="left:${a}%;width:${b-a}%;background:${col}"></div><div class="dot" style="left:${r.t*100}%;background:#9B87FF"></div><div class="dot" style="left:${r.s*100}%;background:#5EF2DC;${r.s===r.t?'transform:scale(.6)':''}"></div></div><em style="color:${col}">${d>0?'+':''}${(d*100).toFixed(1)}</em></div>`}).join('');
+  openModal(`<div class="kicker" style="color:var(--vio)">Per question · 逐题 · SI S71</div><h3 class="h3" style="margin:14px 0 6px">已知阳性节点覆盖率：结构化证据包 vs TEXT</h3>
+  <div class="small"><span class="acc">●</span> 结构化 均值 ${(ms*100).toFixed(1)}%　<span class="vio">●</span> TEXT 均值 ${(mt*100).toFixed(1)}%　·　<b class="acc">${hi}</b> 题更高 / <b>${eq}</b> 题持平 / <b class="amb">${lo}</b> 题更低　·　○ = 结构化证据包未提供任何事实（${z.length} 题：${zh} 高 / ${ze} 平 / ${zl} 低）</div>
+  <div class="db" style="margin-top:22px">${h}<div class="ax"><span></span><div><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div><span style="text-align:right">差值 pp</span></div></div>
+  <div class="caveat" style="margin-top:22px;padding:14px 20px;border-radius:12px;border:1px dashed rgba(255,176,87,.55);font:400 17px/1.6 var(--sans);color:#FFD9A8">描述性统计，不作推断检验。24 道有目的选取的开发题；参考标签为暴露的、AI 策展的不完整阳性集合，并与结构化事实同源。不构成准确率或优越性结论。</div>`)}})();
+
+/* ================= S7 layers ================= */
+(()=>{const sl=$('#s7'),svg=$('.iso svg',sl),lp=$('.lp',sl);
+ const LY=[
+ {n:'L1',zh:'来源保真',en:'Provenance fidelity',c:'#6FD3FF',den:'控制器回执中的归档片段与文档版本',ok:'存储的字节、定位符、偏移与引文彼此一致',no:'蕴含关系、化学真实性或实验有效性',rows:[['12 份 XML 中 103 个片段；14/14 篡改对照被拒绝','SI S67'],['26 个 XML 版本中 553 次定位符/引文出现，552 次吻合；1 例表格/化学式序列化例外被保留','§3.7 · SI S55, S68']]},
+ {n:'L2',zh:'条件保留',en:'Condition preservation',c:'#5EF2DC',den:'版本化条件断言记录中的声明字段',ok:'材料阶段、组成、限定词、对照与终点状态经序列化后保持不变',no:'未报告的字段在原文中确实不存在，或两种条件等价',rows:[['113 × 15 = 1,695 个字段状态：604 PRESENT_AI_EXTRACTED / 1,091 NOT_EXTRACTED——覆盖清单，不是字段准确率','SI S61'],['8 份 R17 报告 × 15 = 120 个状态：53 PRESENT_SOURCE_REPORTED / 67 NOT_EXTRACTED','SI S65, S70']]},
+ {n:'L3',zh:'GRAPH–strong-FLAT 实现对等',en:'GRAPH–strong-FLAT parity',c:'#9B87FF',den:'同一事实表、证据范围、排序与证据包上限下的配对问题',ok:'在已保存策略下，两种实现返回相同或不同的证据包',no:'一般意义上的图/关系等价，或该策略之外的拓扑效应',rows:[['24/24 选中事实、有序来源单元与证据包字节一致；72/72 证据包离线复现','§3.4 · SI S53, S68']]},
+ {n:'L4',zh:'暴露语料检索',en:'Exposed-corpus retrieval',c:'#C38BFF',den:'暴露开发语料中已定位、版本化的来源绑定',ok:'某个来源单元在所测排名与粒度下被召回或未被召回',no:'答案正确性、总体性能或独立测试结果',rows:[['24 题、233 个已知阳性绑定：节点覆盖率 结构化 65.6% vs TEXT 55.8%；12 高 / 3 平 / 9 低','§3.4 · SI S71'],['51 题、222 个绑定、2,857 个片段：全局节点 Recall@10 MiniLM 32.5%、BM25 63.8%；完整引文覆盖率 22.1% 与 50.0%','§3.5 · SI S51']]},
+ {n:'L5',zh:'契约合规',en:'Contract compliance',c:'#FFB057',den:'固定预检单元中生成的记录',ok:'可机械检查的 schema/字段存在、输入绑定 ID、非空连续引用与预算合规',no:'语义上的条件适用性，以及无依据外推的检测',rows:[['50 条终端回答中 48 处引用，48 个 ID 全部解析；其中 35/48 为连续规范化子串','§3.6 · SI S56'],['完整报告预检 0/8 契约有效；已识别请求规范与校验器缺陷','SI S57–S58']]}];
+ const SF={n:'CAL',zh:'外部校准 · SciFact',en:'External calibration (public task)',c:'#FFB057',den:'188 条证据阳性声明；5,183 篇摘要',ok:'摘要级 BM25 Recall@5 0.862，词重叠基线 0.664；42 胜 / 144 平 / 2 负',no:'不迁移到 HA–肽 断言；只说明检索管线本身运作正常',rows:[['SciFact 标注的是声明–摘要关系，不是 HA–肽 裁决','§1 · §3.5 · SI S34']]};
+ const cx=430,hw=300,hh=118,th=22;let g='<defs><filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+ LY.forEach((l,i)=>{const y=650-i*108,c=l.c;
+  g+=`<g class="lay" data-i="${i}"><polygon points="${cx-hw},${y} ${cx},${y+hh} ${cx},${y+hh+th} ${cx-hw},${y+th}" fill="${c}" fill-opacity=".16" stroke="${c}" stroke-opacity=".5"/>
+  <polygon points="${cx},${y+hh} ${cx+hw},${y} ${cx+hw},${y+th} ${cx},${y+hh+th}" fill="${c}" fill-opacity=".26" stroke="${c}" stroke-opacity=".5"/>
+  <polygon class="top" points="${cx},${y-hh} ${cx+hw},${y} ${cx},${y+hh} ${cx-hw},${y}" fill="${c}" fill-opacity=".13" stroke="${c}"/>
+  <line x1="${cx+hw}" y1="${y}" x2="${cx+hw+48}" y2="${y}" stroke="${c}" stroke-opacity=".7"/>
+  <text x="${cx+hw+58}" y="${y-4}" fill="${c}" font-size="20" font-weight="700" font-family="Consolas,monospace">${l.n}</text>
+  <text x="${cx+hw+58}" y="${y+24}" fill="#EAF1FF" font-size="22" font-weight="600">${l.zh.replace('GRAPH–strong-FLAT ','')}</text></g>`});
+ svg.innerHTML=g;
+ $$('.lay',svg).forEach(e=>e.addEventListener('click',ev=>{ev.stopPropagation();sel(+e.dataset.i)}));
+ const sh=[['polygon(0 0,55% 0,45% 50%,0 40%)','-160px','-120px','-40deg'],['polygon(55% 0,100% 0,100% 45%,45% 50%)','170px','-140px','35deg'],['polygon(0 40%,45% 50%,30% 100%,0 100%)','-190px','90px','-25deg'],['polygon(45% 50%,100% 45%,100% 70%,60% 100%)','200px','80px','50deg'],['polygon(30% 100%,45% 50%,60% 100%)','-30px','190px','80deg'],['polygon(60% 100%,100% 70%,100% 100%)','120px','200px','-60deg']];
+ $$('.sigma span',sl).forEach((s,i)=>{s.style.clipPath=sh[i][0];s.style.setProperty('--x',sh[i][1]);s.style.setProperty('--y',sh[i][2]);s.style.setProperty('--r',sh[i][3])});
+ let si=-1;
+ function show(l){lp.style.setProperty('--lc',l.c);lp.innerHTML=`<div class="no">${l.n==='CAL'?'公开任务校准':'记分卡层 '+l.n}</div><h3>${l.zh}</h3><div class="en">${l.en}</div>
+  <div class="lab">分母</div><p>${l.den}</p><div class="lab">通过 / 测得值意味着</div><p class="ok">${l.ok}</p><div class="lab">不能确立</div><p class="no2">${l.no}</p>
+  <div class="lab">实测结果（表 2）</div><ul>${l.rows.map(r=>`<li>${r[0]}<span class="src">${r[1]}</span></li>`).join('')}</ul>`}
+ function sel(i){si=i;$$('.lay',svg).forEach((e,k)=>e.classList.toggle('sel',k===i));show(LY[i])}
+ ACT.scifact=()=>{si=-2;$$('.lay',svg).forEach(e=>e.classList.remove('sel'));show(SF)};
+ H.s7={enter(){if(si===-1)sel(0)},step(s){if(s>=1&&!FINAL){$$('.sigma,.sigma span',sl).forEach(e=>{e.style.animation='none';void e.offsetWidth;e.style.animation=''})}}}})();
+
+/* ================= S8 / S11 flips ================= */
+H.s8={leave(){$$('#s8 .flip').forEach(f=>f.classList.remove('fl'))}};
+H.s11={leave(){$$('#s11 .flip').forEach(f=>f.classList.remove('fl'))}};
+
+/* ================= S9 related work ================= */
+(()=>{const REL={
+ rag:{t:'检索增强生成（RAG）',q:[['Retrieval-augmented generation conditions output on retrieved text.<sup>5</sup>','§1']],r:[5]},
+ graphrag:{t:'GraphRAG',q:[['Published GraphRAG uses graph indexing and community summaries; our adjacency pipeline does not reproduce it.<sup>6</sup>','§1']],r:[6]},
+ modular:{t:'模块化分析',q:[['Materials concept forecasting, incomplete-knowledge benchmarks and modular analyses distinguish retrieval, knowledge-unit size and reasoning.<sup>7–9</sup>','§1'],['The same-fact design adds a separation between the traversal and the curated facts that it traverses.','§4.2']],r:[7,8,9]},
+ bench:{t:'公开基准',q:[['Public references are task-specific. SciFact and PubMedQA label claim–abstract relations and abstract answers.<sup>10,11</sup> Context24 covers contextual retrieval; the 78 materials figure queries belong to MuLMS-Img.<sup>12–15</sup> SciClaimEval, Context25, SFBench and Matter-of-Fact are distinct releases and tasks.<sup>16–21</sup> None supplies blinded hyaluronic acid–peptide adjudication.','§1']],r:[10,11,12,14,16,19,21]}};
+ $$('#s9 .rr[data-k]').forEach(e=>e.addEventListener('click',ev=>{ev.stopPropagation();const x=REL[e.dataset.k];
+  openModal(`<div class="kicker">Related work · 稿件原句</div><h3 class="h3" style="margin:14px 0 4px">${x.t}</h3>${x.q.map(q=>`<div class="quote">${q[0]} <span class="src" style="font-style:normal">${q[1]}</span></div>`).join('')}
+  <ul class="reflist">${x.r.map(n=>`<li><b>[${n}]</b>${esc(D.refs[n]||'')}</li>`).join('')}</ul>${x.r.length>3?'<div class="src" style="margin-top:12px">参考文献节选；完整列表见稿件 References。</div>':''}`)}))})();
+
+/* ================= S10 sliders ================= */
+(()=>{const sl=$('#s10'),pa=$('.pp.pa',sl),pb=$('.pp.pb',sl);
+ const A=[['检索算法','图检索','文本检索'],['策展事实','策展事实引导选择','无策展事实'],['证据打包','结构化证据包','原文段落'],['输入预算','预算 A','预算 B']];
+ const B=[['检索实现','图遍历 GRAPH','关系扫描 strong FLAT'],['策展事实','同一事实表','另一套事实'],['证据打包','同一打包器','另一种打包'],['输入预算','同一证据包上限','另一种预算']];
+ let rnd=7;const rn=()=>(rnd=(rnd*9301+49297)%233280)/233280;
+ const pat=()=>({a:Array.from({length:14},()=>.25+.75*rn()),b:Array.from({length:14},()=>.25+.75*rn())});
+ function mk(el,rows,title,sub,left,right){el.innerHTML=`<h4>${title}<small>${sub}</small></h4>`+rows.map(r=>`<div class="rw"><div class="lb">${r[0]}</div><div class="val"><span class="tx"></span><div class="bars">${'<i></i>'.repeat(14)}</div></div><div class="st"></div></div>`).join('')+
+  `<div class="sl"><span>${left}</span><input type="range" min="0" max="1000" value="0"><span>${right}</span></div><div class="out"></div>`;
+  return{el,rows:$$('.rw',el).map(()=>pat()),rg:$('input',el),user:false,t:0}}
+ const PA=mk(pa,A,'典型比较','图检索 vs 文本检索','方案 A','方案 B'),PB=mk(pb,B,'受控比较','GRAPH vs strong FLAT','GRAPH','strong FLAT');
+ let locked=false;
+ [PA,PB].forEach(P=>P.rg.addEventListener('input',()=>{P.user=true;P.t=P.rg.value/1000;paint(P)}));
+ const mix=(t)=>`rgb(${Math.round(94+61*t)},${Math.round(242-107*t)},${Math.round(220+35*t)})`;
+ function paint(P){const isB=P===PB,R=$$('.rw',P.el);
+  R.forEach((rw,i)=>{const fixed=isB&&locked&&i>0,t=fixed?0:P.t,pt=P.rows[i];
+   const tx=$('.tx',rw),r=(isB?B:A)[i];tx.textContent=t<.5?r[1]:r[2];tx.style.opacity=Math.min(1,.25+Math.abs(t-.5)*3);
+   $$('.bars i',rw).forEach((b,k)=>{b.style.height=((pt.a[k]*(1-t)+pt.b[k]*t)*100)+'%';b.style.background=fixed?'rgba(94,242,220,.5)':mix(t)});
+   const st=$('.st',rw);if(fixed){st.className='st lock';st.textContent='🔒 共享'}else if(isB&&locked&&i===0){st.className='st lock';st.textContent='唯一变量'}else{st.className='st chg';st.textContent='变化'}});
+  const o=$('.out',P.el);if(!isB||!locked){o.className='out bad';o.textContent=isB?'未锁定：差异仍混有四个因素，无法归因':'四个因素一起变 → 结果差异无法归因'}else{o.className='out good';o.textContent='只剩检索实现在变 → 测到的差异才是 Δgraph'}}
+ function setLock(v){locked=v;$('h4',pb).innerHTML=v?'同事实设计<small>已锁定共享部分</small>':'受控比较<small>GRAPH vs strong FLAT · 尚未锁定</small>';const b=$('[data-a=lock]',sl);b.textContent=v?'🔓 解锁对照':'🔒 锁定共享部分';paint(PB)}
+ ACT.lock=()=>setLock(!locked);
+ H.s10={enter(s){if(FINAL){PA.t=PB.t=.7;PA.rg.value=PB.rg.value=700}setLock(s>=1);paint(PA)},step(s){setLock(s>=1)},
+  tick(t){if(FINAL)return;[[PA,0],[PB,1.3]].forEach(([P,ph])=>{if(!P.user){P.t=.5-.5*Math.cos(t*.0011+ph);P.rg.value=P.t*1000;paint(P)}})}};
+ setLock(false);paint(PA)})();
+
+/* ---------- loop & start ---------- */
+let last=performance.now();
+function loop(t){const dt=Math.min(50,t-last);last=t;drawBg(dt);if(cur>=0)hk('tick',t,dt);requestAnimationFrame(loop)}
+fit();const n0=parseInt(location.hash.slice(1))||1;
+go(n0-1,FINAL?99:0);requestAnimationFrame(loop);showHud();
+window.DECK={go,next,prev,get cur(){return cur},get step(){return step}};
+})();
+</script>
+</body></html>

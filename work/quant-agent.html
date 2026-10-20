@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quant Agent — Yansong Li</title>
+  <meta name="description" content="Quant Agent: a local-first AI quantitative research framework with backtesting, paper trading, risk controls and a deliberately blocked live-trading path.">
+  <link rel="stylesheet" href="../style.css">
+  <script src="../i18n.js" defer></script>
+  <script src="../assets/spatial3d.js?v=20261019" defer></script>
+</head>
+<body>
+  <header class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="../index.html" class="nav-logo" aria-label="Yansong Li home"><span class="dot">YL</span>Yansong Li</a>
+      <nav class="nav-links" id="nav-links">
+        <a href="../index.html#library">HA × PEP Atlas</a>
+        <a href="../work.html" aria-current="page">Work</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#focus">Focus</a>
+        <a class="nav-gh" href="https://github.com/C12isme945/quant-agent" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+      <div class="lang-switch" role="group" aria-label="Language / 语言">
+        <button class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
+        <button class="lang-btn" data-lang="zh" aria-pressed="false">中文</button>
+      </div>
+      <button class="nav-menu" aria-label="Menu" aria-expanded="false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="detail-hero">
+      <div class="wrap">
+        <div class="breadcrumb"><a href="../work.html">Work</a><span class="sep">/</span><span>Quant Agent</span></div>
+        <div class="detail-cat">AI & quantitative systems · Python · v2.1</div>
+        <h1 class="detail-title">Quant Agent</h1>
+        <p class="detail-lede">A local-first AI quantitative research framework. Backtest, paper trade and evaluate strategies — with live trading deliberately blocked behind real guardrails.</p>
+        <div class="detail-actions">
+          <a class="btn btn-primary" href="https://github.com/C12isme945/quant-agent" target="_blank" rel="noopener">View on GitHub <span class="arrow">↗</span></a>
+          <a class="btn btn-ghost" href="../work.html">← All work</a>
+        </div>
+        <div class="meta-row">
+          <div class="meta-item"><span>Language</span><b>Python 3.11+</b></div>
+          <div class="meta-item"><span>Version</span><b>v2.1.0 · May 2026</b></div>
+          <div class="meta-item"><span>Trading</span><b>Paper-first</b></div>
+          <div class="meta-item"><span>Tests</span><b>pytest suite</b></div>
+        </div>
+        <div class="detail-visual t-indigo">
+          <div class="visual-panel">
+            <div class="vp-head"><span class="vp-title">Research loop · daily run</span><span class="vp-badge">Paper mode</span></div>
+            <div class="vp-row"><span>Strategies evaluated</span><b>4</b></div>
+            <div class="vp-row"><span>Best · MACD momentum</span><b>+12.4%</b></div>
+            <div class="vp-row"><span>Sortino / Calmar</span><b>1.82 / 1.31</b></div>
+            <div class="vp-row"><span>Risk checks</span><b>Passed</b></div>
+            <div class="vp-row"><span>Live orders</span><b>Blocked</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap" style="padding-bottom:96px">
+      <div class="detail-content">
+        <h2>Overview</h2>
+        <p data-i18n-html="quant.overview1">Quant Agent is a modular research framework for systematic trading: data providers, strategies, backtesting, risk controls, brokers and agents each have a defined boundary. It is designed to produce <strong>evidence</strong>, not promises — the default mode is backtest or paper trading, and the live path requires multiple deliberate confirmations.</p>
+        <p data-i18n-html="quant.overview2">The v2.1 release added multi-provider data collection (yfinance, AKShare, Alpha Vantage), GUI configuration for LLM providers, news sentiment overlays, and a research loop that can propose strategy-paper promotion without ever granting live eligibility automatically.</p>
+
+        <h2>Highlights</h2>
+        <div class="highlight-grid">
+          <div class="highlight">
+            <div class="n">01</div>
+            <h4>Four strategies, one framework</h4>
+            <p>MA cross, RSI, MACD momentum and Bollinger mean-reversion with shared parameter tuning and search spaces.</p>
+          </div>
+          <div class="highlight">
+            <div class="n">02</div>
+            <h4>Risk before returns</h4>
+            <p>Every order passes a risk manager with position, notional, daily-loss and drawdown limits — plus stop-loss and take-profit handling.</p>
+          </div>
+          <div class="highlight">
+            <div class="n">03</div>
+            <h4>LLM research, not execution</h4>
+            <p>Agents submit JSON proposals that are converted to orders only through the gateway. They never touch a broker directly.</p>
+          </div>
+          <div class="highlight">
+            <div class="n">04</div>
+            <h4>Metrics that matter</h4>
+            <p>Sortino and Calmar ratios, average trade P&amp;L, win/loss streaks, and half-Kelly position sizing.</p>
+          </div>
+        </div>
+
+        <h2>Every order follows the same path</h2>
+        <div class="flow">
+          <span class="flow-step">Strategy</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Decision agent</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Risk manager</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Approval gate</span><span class="flow-arrow">→</span>
+          <span class="flow-step accent">Broker adapter</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Audit log</span>
+        </div>
+        <p data-i18n-html="quant.live">Live submission requires all of: live mode, an explicit enable flag, a disabled kill switch, <code>ALPACA_PAPER=false</code>, a typed risk acknowledgment, a separate order approval, and passing every risk check. Any missing guard stops the order.</p>
+
+        <h2>Research workflow</h2>
+        <table class="spec-table">
+          <tr><td>Backtest</td><td>Daily research loop over all strategies with performance comparison</td></tr>
+          <tr><td>Self-improvement</td><td>Walk-forward validation with review agents and a model registry</td></tr>
+          <tr><td>Promotion stages</td><td>RESEARCH → CANDIDATE → PAPER → LIVE_ELIGIBLE (human approval only)</td></tr>
+          <tr><td>News overlay</td><td>Sentiment can reduce size or force HOLD; it cannot bypass risk checks</td></tr>
+          <tr><td>Audit trail</td><td>Every order and response written to JSONL logs, secrets never recorded</td></tr>
+          <tr><td>Paper broker</td><td>Alpaca paper API with dry-run defaults</td></tr>
+        </table>
+        <div class="callout" data-i18n-html="quant.callout">
+          <b>A risk statement, not a pitch.</b> This project provides research infrastructure only. It does not offer investment advice or return guarantees. Trading systems lose money, fail on bad data, and behave unexpectedly — the README says this plainly, and the software is built as if it were true.
+        </div>
+
+        <h2>Tech stack</h2>
+        <div class="detail-tags">
+          <span class="tag">Python 3.11+</span>
+          <span class="tag">yfinance</span>
+          <span class="tag">AKShare</span>
+          <span class="tag">Alpaca paper</span>
+          <span class="tag">DeepSeek / OpenAI</span>
+          <span class="tag">pytest</span>
+        </div>
+      </div>
+
+      <div class="next-prev">
+        <a href="biosmartsense.html"><span>Next project</span><b>BioSmartSense-IoT →</b></a>
+        <a href="../work.html"><span>All projects</span><b>Back to work →</b></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <div class="footer-brand"><b>Yansong Li</b> · Engineer & builder</div>
+      <div class="footer-links"><a href="../index.html">Home</a><a href="../work.html">Work</a><a href="https://github.com/C12isme945" target="_blank" rel="noopener">GitHub</a></div>
+      <div class="footer-note">© 2026 Yansong Li.</div>
+    </div>
+  </footer>
+  <script src="../app.js"></script>
+</body>
+</html>
