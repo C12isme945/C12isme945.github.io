@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PolyVAN-Agent — 1-Page Write-up (OSI Hackathon 2026)</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 7.5mm 10mm;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Times New Roman", "Georgia", serif;
+    color: #0f172a;
+    background: #ffffff;
+    font-size: 8.55pt;
+    line-height: 1.26;
+    max-width: 210mm;
+    margin: 0 auto;
+  }
+  header {
+    border-bottom: 1.5px solid #0f172a;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+  .conf-tag {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 7.2pt;
+    font-weight: 700;
+    color: #0284c7;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  h1 {
+    font-size: 12.2pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 2px 0;
+    line-height: 1.15;
+  }
+  .authors {
+    font-size: 8.2pt;
+    color: #334155;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .abstract-box {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-left: 3px solid #0284c7;
+    padding: 4.5px 7.5px;
+    margin-bottom: 6px;
+    font-size: 8.15pt;
+    text-align: justify;
+  }
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  h2 {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 8.8pt;
+    font-weight: 700;
+    color: #0f172a;
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 1px;
+    margin: 5px 0 3px;
+    text-transform: uppercase;
+  }
+  h2:first-child { margin-top: 0; }
+  p {
+    margin-bottom: 3.8px;
+    text-align: justify;
+  }
+  .eq {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 3px 6px;
+    margin: 3px 0;
+    font-family: "Times New Roman", serif;
+    font-size: 8.6pt;
+    text-align: center;
+    border-radius: 3px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 7.4pt;
+    margin: 3px 0 4.5px;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  th, td {
+    border-top: 1px solid #cbd5e1;
+    border-bottom: 1px solid #cbd5e1;
+    padding: 2px 3.5px;
+    text-align: left;
+  }
+  th {
+    background: #f1f5f9;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .hi { color: #0284c7; font-weight: 700; }
+  .err { color: #dc2626; font-weight: 700; }
+  .fig-box {
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 4px 5px;
+    margin: 3px 0;
+    background: #ffffff;
+  }
+  .fig-cap {
+    font-size: 7.3pt;
+    color: #334155;
+    margin-top: 2px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: justify;
+  }
+  ul {
+    padding-left: 12px;
+    margin-bottom: 3px;
+  }
+  li { margin-bottom: 1.8px; text-align: justify; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="conf-tag">4th Open Scientific Intelligence (OSI) Hackathon 2026 · Official 1-Page Project Write-up</div>
+  <h1>PolyVAN-Agent: Repurposing Autoregressive Attention as a Variational Partition Function Solver for Polyelectrolyte–Peptide Assembly &amp; Formulation Design</h1>
+  <div class="authors"><strong>Yansong Li</strong> · South China University of Technology (SCUT) · Code, Data &amp; Interactive Web Workbench: <code>PolyVAN-OSI-Hackathon-2026</code></div>
+</header>
+
+<div class="abstract-box">
+  <strong>Abstract —</strong> In functional soft-matter formulations—from biomedical lipopeptide–hyaluronan (HA) carriers (3 ppm Pal-KTTKS) to industrial papermaking wet-end retention aids (0.5–5 ppm cationic PAM)—<em>total additive dosage systematically diverges from active species concentration</em>. At micromolar operating concentrations, all-atom molecular dynamics faces a severe "concentration chasm" (&gt;700 nm simulation boxes), while classical 1D nearest-neighbor transfer matrices (L0 DP) fail when semi-flexible chains form spatial loops that couple sequence-distant hydrophobic ligands. Here we present <strong>PolyVAN-Agent</strong>, an open scientific intelligence framework that (1) exploits the exact <strong>mathematical isomorphism between GPT causal autoregressive decomposition and statistical-mechanical Boltzmann distributions</strong> to solve loop-coupled polyelectrolyte partition functions without training data, and (2) embeds this solver as a verified tool inside an LLM experimental-design agent. Against exact 2<sup>20</sup> (1,048,576-state) enumeration, our causal Transformer achieves <strong>0.00% free-energy error (0.0001 <i>k</i><sub>B</sub><i>T</i>)</strong> and importance-sampling <strong>ESS = 1.00</strong>, proving that ignoring long-range loops underestimates site occupancy by <strong>13.8%</strong>. Across a 200-sample prior ensemble, PolyVAN-Agent discovers a sharp <strong>oligosaccharide geometric cliff at dp20 (4.0 kDa)</strong> and a <strong>150 mM salt-induced cluster reset</strong>, enabling automated design of falsifiable ITC/fluorescence protocols (E1–E5) and salt-switchable formulations.
+</div>
+
+<div class="cols">
+  <div>
+    <h2>1. Physical Bottleneck: Loops Break Transfer Matrices</h2>
+    <p>
+      Polyelectrolyte–amphiphile formulations operate at trace dosages (3 ppm ≈ 3.74 μM Pal-KTTKS on 0.1 wt% HA), where functional efficacy depends on equilibrium partitioning among four states: <em>free monomer</em>, <em>solution self-aggregate</em>, <em>isolated chain-bound monomer</em>, and <em>chain-templated multivalent clusters</em>.
+    </p>
+    <p>
+      While 1D dynamic programming (L0 transfer matrix) captures nearest-neighbor cooperativity (<i>ω</i>) and finite chain length (<i>N</i>), HA is a semi-flexible worm-like chain (persistence length <i>l</i><sub>p</sub> ≈ 5 nm). Sequence-distant sites |<i>i</i> − <i>j</i>| ≥ 3 contact via spatial looping with probability <i>P</i><sub>loop</sub>(|<i>i</i> − <i>j</i>|) ∝ |<i>i</i> − <i>j</i>|<sup>−3/2</sup>. Because C16 palmitoyl tails carry strong hydrophobic association (Δ<i>G</i> ≈ −15 to −25 kJ/mol, Boltzmann factor 4.2×10<sup>2</sup>–2.4×10<sup>4</sup>), non-local loop couplings dominate the partition function <i>Z</i>, causing 1D transfer matrices to break down.
+    </p>
+
+    <h2>2. Isomorphism: GPT Attention as Physics Solver</h2>
+    <p>
+      A lattice polymer with site occupancies <b>s</b> = (<i>s</i><sub>1</sub>, …, <i>s</i><sub><i>N</i></sub>) ∈ {0, 1}<sup><i>N</i></sup> obeys the exact autoregressive probability decomposition:
+    </p>
+    <div class="eq">
+      <i>q</i><sub><i>θ</i></sub>(<b>s</b>) = ∏<sub><i>i</i>=1..<i>N</i></sub> <i>q</i><sub><i>θ</i></sub>(<i>s</i><sub><i>i</i></sub> | <i>s</i><sub>1</sub>, …, <i>s</i><sub><i>i</i>−1</sub>) &nbsp;⟺&nbsp; <b>Causal GPT Token Generation</b>
+    </div>
+    <p>
+      Rather than fitting external datasets, we train a 2-layer causal Transformer (<code>MiniGPT</code>, <i>d</i> = 48, <i>h</i> = 4) directly on the loop-coupled Hamiltonian <i>E</i>(<b>s</b>) = −<i>μ</i>∑<i>s</i><sub><i>i</i></sub> − <i>J</i>∑<i>s</i><sub><i>i</i></sub><i>s</i><sub><i>i</i>+1</sub> − <i>J</i><sub>long</sub>∑<sub><i>j</i>−<i>i</i>≥3</sub>|<i>i</i>−<i>j</i>|<sup>−3/2</sup><i>s</i><sub><i>i</i></sub><i>s</i><sub><i>j</i></sub> by minimizing the variational free energy upper bound via <i>β</i>-annealed REINFORCE:
+    </p>
+    <div class="eq">
+      <i>F</i><sub><i>q</i></sub> = 𝔼<sub><b>s</b>∼<i>q</i><sub><i>θ</i></sub></sub>[ <i>E</i>(<b>s</b>) + <i>k</i><sub>B</sub><i>T</i> ln <i>q</i><sub><i>θ</i></sub>(<b>s</b>) ] ≥ <i>F</i><sub>exact</sub> = −<i>k</i><sub>B</sub><i>T</i> ln <i>Z</i>
+    </div>
+    <p>
+      Causal self-attention naturally captures all-to-all long-range site couplings while supporting exact 𝒪(<i>N</i>) independent microstate sampling and unbiased importance-sampling reweighting (<i>F</i><sub>IS</sub>).
+    </p>
+
+    <h2>3. Exact 2<sup>20</sup> Benchmark &amp; Quantitative Proof</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Solver / Regime (<i>N</i> = 20, 1.05×10<sup>6</sup> states)</th>
+          <th><i>F</i><sub>exact</sub> (<i>k</i><sub>B</sub><i>T</i>)</th>
+          <th>Solver <i>F</i></th>
+          <th>Rel. Err</th>
+          <th>Occupancy</th>
+          <th>ESS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Nearest-Neighbor (<i>J</i><sub>long</sub> = 0) · MiniGPT</td>
+          <td>−20.0460</td>
+          <td class="hi">−20.0460</td>
+          <td class="hi">0.00%</td>
+          <td>0.8736 / 0.8728</td>
+          <td>1.00</td>
+        </tr>
+        <tr>
+          <td>+ Loop Coupling (<i>J</i><sub>long</sub> = 3) · MiniGPT</td>
+          <td>−49.4726</td>
+          <td class="hi">−49.4725</td>
+          <td class="hi">0.00%</td>
+          <td>0.9944 / 0.9943</td>
+          <td>1.00</td>
+        </tr>
+        <tr>
+          <td>+ Loop Coupling · Classical L0 DP</td>
+          <td>−49.4726</td>
+          <td class="err">−20.0460</td>
+          <td class="err">59.5%</td>
+          <td class="err">0.8736 (−13.8%)</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      <code>MiniGPT</code> matches exact 2<sup>20</sup> enumeration to 10<sup>−4</sup> <i>k</i><sub>B</sub><i>T</i> with ESS = 1.00, whereas classical L0 DP misses 29.43 <i>k</i><sub>B</sub><i>T</i> of loop stabilization and underestimates site occupancy by <strong>13.8%</strong>.
+    </p>
+  </div>
+
+  <div>
+    <h2>4. Physical Discovery: dp20 Cliff &amp; Salt Reset</h2>
+    <p>
+      Coupling our partition solver with a 200-sample prior sensitivity ensemble over binding stoichiometry (<i>n</i><sub>site</sub> ∈ {1, 2, 3} disaccharides/peptide) and minimum nucleus size (<i>n</i><sub>nuc</sub> ∈ {3..8}) reveals two falsifiable physical rules:
+    </p>
+    <div class="fig-box">
+      <svg viewBox="0 0 340 94" width="100%" height="90">
+        <!-- Left chart: Oligo Cliff -->
+        <rect x="26" y="6" width="132" height="68" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.8"/>
+        <line x1="80" y1="6" x2="80" y2="74" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,2"/>
+        <polyline fill="none" stroke="#0284c7" stroke-width="2" points="32,72 46,72 60,72 72,72 80,30 94,24 110,21 132,19 152,18"/>
+        <text x="30" y="85" font-size="6.3" font-family="Arial">dp8–18 (No Nucl.)</text>
+        <text x="83" y="15" font-size="6.3" font-family="Arial" fill="#b45309" font-weight="bold">dp20 Cliff (4.0 kDa)</text>
+        <text x="9" y="46" font-size="6.3" font-family="Arial" transform="rotate(-90 11,46)">f_tmpl (3 ppm)</text>
+        <!-- Right chart: Salt Switch -->
+        <rect x="192" y="6" width="140" height="68" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.8"/>
+        <polyline fill="none" stroke="#10b981" stroke-width="2" points="198,10 214,24 244,63 284,73 326,73"/>
+        <polyline fill="none" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="3,2" points="198,70 214,56 244,20 284,9 326,8"/>
+        <text x="195" y="85" font-size="6.3" font-family="Arial">I: 1 mM → 10 mM (Storage) → 150 mM (Medium)</text>
+        <text x="246" y="34" font-size="6.1" font-family="Arial" fill="#10b981" font-weight="bold">Cluster f_tmpl</text>
+        <text x="252" y="18" font-size="6.1" font-family="Arial" fill="#ef4444" font-weight="bold">Free Monomer</text>
+      </svg>
+      <div class="fig-cap">
+        <strong>Fig 1.</strong> (Left) Sharp geometric step at dp = 2·<i>n</i><sub>site</sub>·<i>n</i><sub>nuc</sub> = 20 (4.01 kDa): effective CAC drops from &gt;285 ppm (dp18) to 2.32 ppm (dp20). (Right) Counterion-release salt switch (<i>I</i> = 1→150 mM): 73.5% templated clusters at 10 mM dissociate into &gt;99% free monomer at 150 mM.
+      </div>
+    </div>
+    <ul>
+      <li><strong>Geometric Oligosaccharide Cliff (E2):</strong> Across 168/200 templating priors, <i>P</i>(MW<sub>90</sub> &lt; 20 kDa) = 97.6% (median 6.4 kDa). Chains shorter than <i>n</i><sub>site</sub> × <i>n</i><sub>nuc</sub> disaccharides cannot host a nucleus, creating a 100-fold CAC drop between dp18 and dp20.</li>
+      <li><strong>Culture-Medium Reset &amp; Salt-Switchable Carrier (E3/E4):</strong> Because binding scales as <i>K</i>(<i>I</i>) ∝ <i>I</i><sup>−<i>Z</i><sub>rel</sub></sup>, diluting a low-salt formulation (<i>I</i> = 10 mM, <i>f</i><sub>tmpl</sub> = 73.5%) into physiological medium (<i>I</i> = 150 mM) melts &gt;90% of clusters in 76.2% of priors—enabling a patentable <strong>"Storage-Locked, Skin-Released" (A+D) formulation</strong>.</li>
+    </ul>
+
+    <h2>5. Agentic Orchestration &amp; Cross-Domain Impact</h2>
+    <p>
+      <strong>PolyVAN-Agent</strong> wraps the Python/JS partition solvers and 200-prior sensitivity engine into an interactive Web Workbench covering two isomorphic industrial domains:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Isomorphic Feature</th>
+          <th>Domain A: HA + Pal-KTTKS</th>
+          <th>Domain B: Papermaking CPAM</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Operating Dosage</td>
+          <td>3.0 ppm lipopeptide</td>
+          <td>0.5–5.0 ppm (100–500 g/t pulp)</td>
+        </tr>
+        <tr>
+          <td>Active Species</td>
+          <td>Templated cluster / monomer</td>
+          <td>Loop-and-tail bridging state</td>
+        </tr>
+        <tr>
+          <td>Parasitic Sink</td>
+          <td><i>β</i>-sheet fibril precipitation</td>
+          <td>Anionic trash (DCS) complex</td>
+        </tr>
+        <tr>
+          <td>Master Variable</td>
+          <td>Ionic strength <i>I</i> (1–150 mM)</td>
+          <td>White-water conductivity <i>κ</i></td>
+        </tr>
+        <tr>
+          <td>Ground-Truth Assay</td>
+          <td>ITC (E1) + Pyrene CAC (E2–E4)</td>
+          <td>Filtrate PCD + DDJ (TAPPI T261)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:7.5pt;color:#334155;margin-top:2px;">
+      <strong>References:</strong> [1] Wu, Wang &amp; Zhang, <em>Phys. Rev. Lett.</em> <strong>122</strong>, 080602 (2019). [2] Hubbe et al., <em>BioResources</em> <strong>4</strong>, 405 (2009). [3] Castelletto et al., <em>Soft Matter</em> (Pal-KTTKS self-assembly).
+    </p>
+  </div>
+</div>
+
+</body>
+</html>
