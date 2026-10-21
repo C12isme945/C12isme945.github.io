@@ -1,69 +1,55 @@
 1
 00:00:00,000 --> 00:00:13,273
 In functional soft-matter formulations (3 ppm Pal-KTTKS + HA, or 2 ppm CPAM in papermaking), total dosage ≠ active species.
-在功能软物质配方中（3 ppm 信号脂肽+透明质酸，或造纸湿部 2 ppm 助留剂），总投加量 ≠ 有效物种浓度。
 
 2
 00:00:13,273 --> 00:00:26,547
-At micromolar dosages, all-atom MD requires >700 nm boxes, while 3D polymer looping breaks 1D transfer matrices.
-微摩尔浓度下全原子模拟需 >700 nm 巨型盒子；而高分子三维空间成环更会导致传统一维转移矩阵彻底失效。
+At micromolar dosages, all-atom MD requires >760 nm boxes, while 3D polymer looping breaks 1D transfer matrices.
 
 3
 00:00:26,547 --> 00:00:39,820
-PolyVAN-Agent repurposes GPT causal attention directly as a variational partition function solver.
-PolyVAN-Agent：直接将 GPT 因果自回归注意力同构为统计力学变分配分函数求解器。
+PolyVAN-Agent: repurposing GPT causal attention directly as a variational partition function solver.
 
 4
 00:00:39,820 --> 00:00:53,943
 Boltzmann distribution p(s) = ∏ p(s_i | s_<i) is mathematically isomorphic to GPT next-token prediction.
-高分子结合位点的玻尔兹曼分布 p(s) = ∏ p(s_i | s_<i) 与 GPT 下一 Token 预测在数学上完全同构。
 
 5
 00:00:53,943 --> 00:01:08,067
 Supervised purely by the physical Hamiltonian E(s) with zero external data via β-annealed REINFORCE.
-无需任何外部训练数据集：直接以包含远程成环耦合的物理哈密顿量 E(s) 作为变分自由能监督信号。
 
 6
 00:01:08,067 --> 00:01:22,190
 Against 2²⁰ (1,048,576) exact states: 0.00% free-energy error, ESS = 1.00, revealing a −13.8% occupancy bias in 1D DP!
-对标 2²⁰（104.8 万构型）精确解：自由能误差 0.00%，ESS = 1.00，证实忽略成环会低估占据率达 13.8%！
 
 7
-00:01:22,190 --> 00:01:39,207
+00:01:22,190 --> 00:01:39,243
 Falsifiable Rule 1 — Oligosaccharide Geometric Cliff: chains shorter than n_site × n_nuc cannot host a nucleus.
-可证伪规律一（寡糖几何断崖）：链长短于 n_site × n_nuc 个二糖时无法容纳单个成核簇。
 
 8
-00:01:39,207 --> 00:01:56,223
+00:01:39,243 --> 00:01:56,297
 Between dp18 and dp20 (4.01 kDa), effective CAC plummets 100-fold from >285 ppm down to 2.32 ppm!
-在 dp18 到 dp20（4.01 kDa）之间，有效临界聚集浓度（CAC）骤降两个数量级（从 >285 ppm 降至 2.32 ppm）！
 
 9
-00:01:56,223 --> 00:02:13,240
+00:01:56,297 --> 00:02:13,350
 Falsifiable Rule 2 — Salt Switch: 73.5% cluster protection at 10 mM storage → >99% free monomer release at 150 mM!
-可证伪规律二（盐敏亲和开关）：10 mM 低盐下 73.5% 锁存于保护簇，进入 150 mM 生理盐后 >99% 解离释放活性单体！
 
 10
-00:02:13,240 --> 00:02:33,615
+00:02:13,350 --> 00:02:33,725
 Across 200 Bayesian prior samples: P(MW_90 < 20 kDa) = 97.6% (median 6.4 kDa), overturning empirical MW myths.
-跨越 200 组贝叶斯全先验抽样：P(MW_90 < 20 kDa) = 97.6%（中位数 6.4 kDa），颠覆常规分子量经验认知。
 
 11
-00:02:33,615 --> 00:02:53,990
+00:02:33,725 --> 00:02:54,100
 Pre-registered experimental matrix E1–E5: E1 (ITC stoichiometry n_site), E2 (dp8–dp50 cliff n_nuc), E3–E4 (DMEM reset).
-预注册可证伪实验矩阵 E1–E5：ITC 定计量比 n_site（E1）、寡糖台阶定核大小 n_nuc（E2）与培养基重置动力学（E4）。
 
 12
-00:02:53,990 --> 00:03:08,013
+00:02:54,100 --> 00:03:08,123
 Agentic Formulation Copilot: strictly enforcing 'LLM as Epistemic Orchestrator, Physics as Calculator'.
-智能体配方副驾驶：严格遵循「大语言模型做认知编排，统计力学求解器做精确计算」防幻觉范式。
 
 13
-00:03:08,013 --> 00:03:22,037
+00:03:08,123 --> 00:03:22,147
 Seamless Cross-Domain Transfer: from HA–Lipopeptide carriers to Papermaking Wet-End CPAM retention aids (0.5–5 ppm).
-跨领域同构迁移：从生物医用透明质酸–脂肽载体，无缝迁移至造纸湿部阳离子助留剂（CPAM）与白水电导率调控。
 
 14
-00:03:22,037 --> 00:03:36,060
+00:03:22,147 --> 00:03:36,170
 PolyVAN-Agent · Open-Source Code, 1-Page Write-up & Interactive Workbench · OSI Hackathon 2026.
-PolyVAN-Agent · 开源代码、1页学术报告与交互式在线工作台已全面公开 · OSI Hackathon 2026。
