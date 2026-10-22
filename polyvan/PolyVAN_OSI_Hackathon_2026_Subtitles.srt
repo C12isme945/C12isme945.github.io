@@ -1,55 +1,55 @@
 1
-00:00:00,000 --> 00:00:13,273
+00:00:00,000 --> 00:00:12,847
 In functional soft-matter formulations (3 ppm Pal-KTTKS + HA, or 2 ppm CPAM in papermaking), total dosage ≠ active species.
 
 2
-00:00:13,273 --> 00:00:26,547
+00:00:12,847 --> 00:00:25,693
 At micromolar dosages, all-atom MD requires >760 nm boxes, while 3D polymer looping breaks 1D transfer matrices.
 
 3
-00:00:26,547 --> 00:00:39,820
+00:00:25,693 --> 00:00:38,540
 PolyVAN-Agent: repurposing GPT causal attention directly as a variational partition function solver.
 
 4
-00:00:39,820 --> 00:00:53,943
+00:00:38,540 --> 00:00:52,197
 Boltzmann distribution p(s) = ∏ p(s_i | s_<i) is mathematically isomorphic to GPT next-token prediction.
 
 5
-00:00:53,943 --> 00:01:08,067
+00:00:52,197 --> 00:01:05,853
 Supervised purely by the physical Hamiltonian E(s) with zero external data via β-annealed REINFORCE.
 
 6
-00:01:08,067 --> 00:01:22,190
+00:01:05,853 --> 00:01:19,510
 Against 2²⁰ (1,048,576) exact states: 0.00% free-energy error, ESS = 1.00, revealing a −13.8% occupancy bias in 1D DP!
 
 7
-00:01:22,190 --> 00:01:39,243
+00:01:19,510 --> 00:01:35,773
 Falsifiable Rule 1 — Oligosaccharide Geometric Cliff: chains shorter than n_site × n_nuc cannot host a nucleus.
 
 8
-00:01:39,243 --> 00:01:56,297
+00:01:35,773 --> 00:01:52,037
 Between dp18 and dp20 (4.01 kDa), effective CAC plummets 100-fold from >285 ppm down to 2.32 ppm!
 
 9
-00:01:56,297 --> 00:02:13,350
+00:01:52,037 --> 00:02:08,300
 Falsifiable Rule 2 — Salt Switch: 73.5% cluster protection at 10 mM storage → >99% free monomer release at 150 mM!
 
 10
-00:02:13,350 --> 00:02:33,725
+00:02:08,300 --> 00:02:28,040
 Across 200 Bayesian prior samples: P(MW_90 < 20 kDa) = 97.6% (median 6.4 kDa), overturning empirical MW myths.
 
 11
-00:02:33,725 --> 00:02:54,100
+00:02:28,040 --> 00:02:47,780
 Pre-registered experimental matrix E1–E5: E1 (ITC stoichiometry n_site), E2 (dp8–dp50 cliff n_nuc), E3–E4 (DMEM reset).
 
 12
-00:02:54,100 --> 00:03:08,123
+00:02:47,780 --> 00:03:01,147
 Agentic Formulation Copilot: strictly enforcing 'LLM as Epistemic Orchestrator, Physics as Calculator'.
 
 13
-00:03:08,123 --> 00:03:22,147
+00:03:01,147 --> 00:03:14,513
 Seamless Cross-Domain Transfer: from HA–Lipopeptide carriers to Papermaking Wet-End CPAM retention aids (0.5–5 ppm).
 
 14
-00:03:22,147 --> 00:03:36,170
+00:03:14,513 --> 00:03:27,880
 PolyVAN-Agent · Open-Source Code, 1-Page Write-up & Interactive Workbench · OSI Hackathon 2026.
